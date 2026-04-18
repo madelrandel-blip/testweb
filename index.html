@@ -31,22 +31,17 @@ header{
     gap:15px;
 }
 
-header h1{
-    margin:0;
-    font-size:20px;
-}
-
 .search{
     padding:8px;
     border-radius:5px;
     border:none;
 }
 
-/* GRID TIPO TIENDA */
+/* GRID */
 .store{
     display:grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
-    gap:20px;
+    grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
+    gap:18px;
     padding:20px;
 }
 
@@ -55,57 +50,43 @@ header h1{
     background:var(--card);
     border-radius:6px;
     overflow:hidden;
-    position:relative;
     transition:0.3s;
 }
 
 .card:hover{
-    transform:scale(1.05);
+    transform:scale(1.04);
 }
 
-/* IMAGEN */
+/* IMG */
 .card img{
     width:100%;
-    display:block;
 }
 
-/* OVERLAY HOVER */
-.overlay{
-    position:absolute;
-    bottom:0;
-    left:0;
-    right:0;
-    background:rgba(0,0,0,0.85);
+/* CONTENIDO SIEMPRE VISIBLE */
+.content{
     padding:10px;
-    opacity:0;
-    transition:0.3s;
 }
 
-.card:hover .overlay{
-    opacity:1;
-}
-
-/* TEXT */
-.overlay h3{
-    margin:5px 0;
+.content h3{
     font-size:14px;
+    margin:5px 0;
 }
 
-.overlay p{
+.content p{
     font-size:12px;
-    color:#aaa;
+    color:#9aa7b1;
 }
 
 /* BOTONES */
 .btns{
     display:flex;
-    gap:5px;
+    gap:6px;
     margin-top:8px;
 }
 
 .btn{
     flex:1;
-    padding:6px;
+    padding:7px;
     text-align:center;
     font-size:12px;
     border-radius:4px;
@@ -116,7 +97,7 @@ header h1{
 .blue{ background:var(--accent); }
 .green{ background:var(--green); }
 
-/* RESPONSIVE */
+/* MOBILE MEJORADO */
 @media(max-width:600px){
     .store{
         grid-template-columns: repeat(2,1fr);
@@ -135,7 +116,7 @@ header h1{
 <div class="store" id="store"></div>
 
 <script>
-// 🎮 BASE DE DATOS (EDITA LINKS AQUÍ)
+// 🎮 JUEGOS
 const juegos = [
 {nombre:"Zelda BOTW", img:"https://art.gametdb.com/switch/box2/US/AAAAA.png", desc:"Mundo abierto", link1:"#", link2:"#"},
 {nombre:"Zelda TOTK", img:"https://art.gametdb.com/switch/box/US/AXN7A.png", desc:"Aventura", link1:"#", link2:"#"},
@@ -160,16 +141,18 @@ function cargar(){
 
         card.innerHTML=`
             <img src="${j.img}">
-            <div class="overlay">
+            <div class="content">
                 <h3>${j.nombre}</h3>
                 <p>${j.desc}</p>
 
                 <div class="btns">
-                    <!-- 🔽 PON TU LINK -->
+
+                    <!-- 🔽 PON TU LINK AQUÍ -->
                     <a href="${j.link1}" class="btn blue">Descargar</a>
 
-                    <!-- 🔽 LINK EXTRA -->
+                    <!-- 🔽 LINK SECUNDARIO -->
                     <a href="${j.link2}" class="btn green">Descargar</a>
+
                 </div>
             </div>
         `;
