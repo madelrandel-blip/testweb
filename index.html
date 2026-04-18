@@ -1,44 +1,207 @@
-<!-- Lista de juegos -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Juegos Nintendo Switch</title>
+
+<style>
+:root {
+    --bg: #f5f5f5;
+    --card: #ffffff;
+    --text: #222;
+    --accent: #0074cc;
+}
+
+body.dark {
+    --bg: #121212;
+    --card: #1e1e1e;
+    --text: #eaeaea;
+    --accent: #4da3ff;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    transition: all 0.3s ease;
+}
+
+/* HEADER */
+header {
+    background: linear-gradient(135deg, var(--accent), #00c6ff);
+    color: white;
+    text-align: center;
+    padding: 30px 20px;
+    position: relative;
+}
+
+.toggle-btn {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    background: white;
+    color: black;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+/* GRID */
+.game-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+/* CARD */
+.game-item {
+    background: var(--card);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    transform: translateY(20px);
+    opacity: 0;
+    animation: fadeUp 0.6s forwards;
+}
+
+.game-item:hover {
+    transform: scale(1.03);
+}
+
+/* ANIMATION */
+@keyframes fadeUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* IMAGE */
+.game-item img {
+    width: 100%;
+}
+
+/* CONTENT */
+.game-content {
+    padding: 15px;
+}
+
+.game-content h3 {
+    margin: 10px 0;
+}
+
+.game-content p {
+    font-size: 14px;
+    color: #777;
+}
+
+/* BUTTON */
+.download-btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 15px;
+    background: var(--accent);
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.download-btn:hover {
+    background: #005fa3;
+}
+
+/* FOOTER */
+footer {
+    text-align: center;
+    padding: 15px;
+    background: #333;
+    color: white;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🎮 Juegos Nintendo Switch</h1>
+    <p>Compatible con emuladores</p>
+    <button class="toggle-btn" onclick="toggleDark()">🌙 Modo</button>
+</header>
+
 <div class="game-list">
-    <!-- Juego 1 -->
+
+    <!-- JUEGO -->
     <div class="game-item">
-        <img src="https://art.gametdb.com/switch/box2/US/AAAAA.png?1516993391" alt="The Legend of Zelda: Breath of the Wild">
-        <h3>The Legend of Zelda: Breath of the Wild</h3>
-        <p>Un juego de aventura en un mundo abierto, donde exploras, resuelves acertijos y enfrentas a poderosos enemigos.</p>
+        <img src="https://art.gametdb.com/switch/box2/US/AAAAA.png">
+        <div class="game-content">
+            <h3>Zelda: Breath of the Wild</h3>
+            <p>Aventura en mundo abierto llena de exploración y secretos.</p>
+            <a href="#" class="download-btn">⬇ Descargar</a>
+        </div>
     </div>
 
-    <!-- Juego 2 -->
     <div class="game-item">
-        <img src="https://art.gametdb.com/switch/box/US/AABPA.png?1523051497" alt="Mario Kart 8 Deluxe">
-        <h3>Mario Kart 8 Deluxe</h3>
-        <p>Corre con tus personajes favoritos de Mario en una variedad de emocionantes circuitos llenos de obstáculos y power-ups.</p>
+        <img src="https://art.gametdb.com/switch/box/US/AABPA.png">
+        <div class="game-content">
+            <h3>Mario Kart 8 Deluxe</h3>
+            <p>Carreras caóticas con ítems y multijugador.</p>
+            <a href="#" class="download-btn">⬇ Descargar</a>
+        </div>
     </div>
 
-    <!-- Juego 3 -->
     <div class="game-item">
-        <img src="https://art.gametdb.com/switch/box/MX/AAABA.png?1700269082" alt="Super Smash Bros. Ultimate">
-        <h3>Super Smash Bros. Ultimate</h3>
-        <p>El épico juego de lucha con personajes icónicos de Nintendo y otras franquicias, ideal para combates multijugador.</p>
+        <img src="https://art.gametdb.com/switch/box/MX/AAABA.png">
+        <div class="game-content">
+            <h3>Super Smash Bros Ultimate</h3>
+            <p>Combates épicos con personajes icónicos.</p>
+            <a href="#" class="download-btn">⬇ Descargar</a>
+        </div>
     </div>
 
-    <!-- Juego 4 -->
     <div class="game-item">
-        <img src="https://art.gametdb.com/switch/box/US/AXN7A.png?1696857880" alt="The Legend of Zelda: Tears of the Kingdom">
-        <h3>The Legend of Zelda: Tears of the Kingdom</h3>
-        <p>Explora, experimenta y lucha con cualquier arma en un nuevo Hyrule lleno de desafíos y aventuras.</p>
+        <img src="https://art.gametdb.com/switch/box/US/AXN7A.png">
+        <div class="game-content">
+            <h3>Zelda: Tears of the Kingdom</h3>
+            <p>Nueva aventura en Hyrule con mecánicas innovadoras.</p>
+            <a href="#" class="download-btn">⬇ Descargar</a>
+        </div>
     </div>
 
-    <!-- Juego 5 -->
     <div class="game-item">
-        <img src="https://art.gametdb.com/switch/box/MX/BLFGA.png?1775153613" alt="Tomodachi Life Living the Dream">
-        <h3>Tomodachi Life Living the Dream</h3>
-        <p>Crea tu vida ideal en una isla desierta, con la oportunidad de diseñar, pescar, recolectar y relacionarte con otros personajes.</p>
+        <img src="https://art.gametdb.com/switch/box/MX/BLFGA.png">
+        <div class="game-content">
+            <h3>Tomodachi Life</h3>
+            <p>Simulador social divertido y caótico.</p>
+            <a href="#" class="download-btn">⬇ Descargar</a>
+        </div>
     </div>
 
-    <!-- Juego 6 -->
     <div class="game-item">
-        <img src="https://art.gametdb.com/switch/box/US/BGW5A.png?1764777614" alt="Metroid Prime 4 Beyond">
-        <h3>Metroid Prime 4 Beyond</h3>
-        <p>Una nueva aventura de ciencia ficción protagonizada por Samus Aran, con exploración, combate y misterio en el espacio.</p>
+        <img src="https://art.gametdb.com/switch/box/US/BGW5A.png">
+        <div class="game-content">
+            <h3>Metroid Prime 4</h3>
+            <p>Exploración sci-fi con acción intensa.</p>
+            <a href="#" class="download-btn">⬇ Descargar</a>
+        </div>
     </div>
+
 </div>
+
+<footer>
+    <p>© 2026 Juegos Switch</p>
+</footer>
+
+<script>
+function toggleDark() {
+    document.body.classList.toggle("dark");
+}
+</script>
+
+</body>
+</html>
