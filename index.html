@@ -45,12 +45,16 @@ header{
     padding:20px;
 }
 
-/* CARD */
+/* CARD (FIX PRINCIPAL) */
 .card{
     background:var(--card);
     border-radius:6px;
     overflow:hidden;
     transition:0.3s;
+
+    display:flex;
+    flex-direction:column;
+    height:100%;
 }
 
 .card:hover{
@@ -60,28 +64,40 @@ header{
 /* IMG */
 .card img{
     width:100%;
+    display:block;
 }
 
-/* CONTENIDO SIEMPRE VISIBLE */
+/* CONTENIDO (FIX PRINCIPAL) */
 .content{
     padding:10px;
+
+    display:flex;
+    flex-direction:column;
+    flex:1; /* 🔥 empuja botones abajo */
 }
 
+/* TÍTULO CONTROLADO */
 .content h3{
     font-size:14px;
     margin:5px 0;
+
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
 }
 
+/* DESCRIPCIÓN */
 .content p{
     font-size:12px;
     color:#9aa7b1;
 }
 
-/* BOTONES */
+/* BOTONES (FIX PRINCIPAL) */
 .btns{
     display:flex;
     gap:6px;
-    margin-top:8px;
+    margin-top:auto; /* 🔥 clave para alineación */
 }
 
 .btn{
@@ -97,7 +113,7 @@ header{
 .blue{ background:var(--accent); }
 .green{ background:var(--green); }
 
-/* MOBILE MEJORADO */
+/* MOBILE */
 @media(max-width:600px){
     .store{
         grid-template-columns: repeat(2,1fr);
@@ -119,21 +135,21 @@ header{
 // 🎮 JUEGOS
 const juegos = [
 {nombre:"The Legend of Zelda: Breath of the Wild", img:"https://art.gametdb.com/switch/box2/US/AAAAA.png", desc:"Mundo abierto", link1:"#", link2:"#"},
-{nombre:"The Legend of Zelda: thears of the Kingdom", img:"https://art.gametdb.com/switch/box/US/AXN7A.png", desc:"Aventura", link1:"#", link2:"#"},
+{nombre:"The Legend of Zelda: Tears of the Kingdom", img:"https://art.gametdb.com/switch/box/US/AXN7A.png", desc:"Aventura", link1:"#", link2:"#"},
 {nombre:"Mario Kart 8 Deluxe", img:"https://art.gametdb.com/switch/box/US/AABPA.png", desc:"Carreras", link1:"#", link2:"#"},
-{nombre:"Super Bros Smash Ultimate", img:"https://art.gametdb.com/switch/box/MX/AAABA.png", desc:"Lucha", link1:"#", link2:"#"},
+{nombre:"Super Smash Bros Ultimate", img:"https://art.gametdb.com/switch/box/MX/AAABA.png", desc:"Lucha", link1:"#", link2:"#"},
 {nombre:"Mario Odyssey", img:"https://art.gametdb.com/switch/box/US/AAACA.png", desc:"Aventura", link1:"#", link2:"#"},
 {nombre:"Pokemon Scarlet", img:"https://art.gametdb.com/switch/box/US/ALZXA.png", desc:"Pokemon", link1:"#", link2:"#"},
 {nombre:"Animal Crossing New Horizons", img:"https://art.gametdb.com/switch/box/US/ACBAA.png", desc:"Simulación", link1:"#", link2:"#"},
 {nombre:"Metroid Dread", img:"https://art.gametdb.com/switch/box/US/AYL8A.png", desc:"Acción", link1:"#", link2:"#"},
 {nombre:"Kirby Forgotten Land", img:"https://art.gametdb.com/switch/box/US/ARZGA.png", desc:"Plataformas", link1:"#", link2:"#"},
-{nombre:"Minecraft", img:"https://art.gametdb.com/switch/box/US/AEUCA.png?1556584878", desc:"Sandbox", link1:"#", link2:"#"},
-{nombre:"Super Mario 3D World + Bowser's Fury", img:"https://art.gametdb.com/switch/box/US/AUZPA.png?1620476500", desc:"Cooperativo", link1:"#", link2:"#"}
+{nombre:"Minecraft", img:"https://art.gametdb.com/switch/box/US/AEUCA.png", desc:"Sandbox", link1:"#", link2:"#"},
+{nombre:"Super Mario 3D World + Bowser's Fury", img:"https://art.gametdb.com/switch/box/US/AUZPA.png", desc:"Cooperativo", link1:"#", link2:"#"}
 ];
 
-// ⚡ CARGA DINÁMICA
+// ⚡ CARGA
 function cargar(){
-    let cont = document.getElementById("store");
+    let cont=document.getElementById("store");
     cont.innerHTML="";
 
     juegos.forEach(j=>{
@@ -147,13 +163,8 @@ function cargar(){
                 <p>${j.desc}</p>
 
                 <div class="btns">
-
-                    <!-- 🔽 PON TU LINK AQUÍ -->
                     <a href="${j.link1}" class="btn blue">Descargar</a>
-
-                    <!-- 🔽 LINK SECUNDARIO -->
                     <a href="${j.link2}" class="btn green">Descargar</a>
-
                 </div>
             </div>
         `;
