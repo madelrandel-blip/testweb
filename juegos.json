@@ -1,0 +1,23 @@
+[
+  {
+    "nombre": "Zelda Breath of the Wild",
+    "img": "https://art.gametdb.com/switch/box2/US/AAAAA.png",
+    "desc": "Mundo abierto",
+    "link1": "#",
+    "link2": "#"
+  },
+  {
+    "nombre": "Mario Kart 8 Deluxe",
+    "img": "https://art.gametdb.com/switch/box/US/AABPA.png",
+    "desc": "Carreras",
+    "link1": "#",
+    "link2": "#"
+  },
+  {
+    "nombre": "Super Smash Bros Ultimate",
+    "img": "https://art.gametdb.com/switch/box/MX/AAABA.png",
+    "desc": "Lucha",
+    "link1": "#",
+    "link2": "#"
+  }
+]
