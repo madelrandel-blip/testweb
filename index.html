@@ -38,20 +38,6 @@ header {
     position: relative;
 }
 
-/* SEARCH */
-.search-box {
-    margin-top: 15px;
-}
-
-.search-box input {
-    padding: 10px;
-    width: 250px;
-    border-radius: 20px;
-    border: none;
-    outline: none;
-}
-
-/* BUTTON TOGGLE */
 .toggle-btn {
     position: absolute;
     right: 20px;
@@ -63,23 +49,35 @@ header {
     cursor: pointer;
 }
 
-/* GRID */
+/* BUSCADOR */
+.search-box {
+    margin-top: 15px;
+}
+
+.search-box input {
+    padding: 10px;
+    width: 250px;
+    border-radius: 20px;
+    border: none;
+}
+
+/* GRID → AHORA MÁS RESPONSIVE */
 .game-list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
     padding: 20px;
 }
 
 /* CARD */
 .game-item {
     background: var(--card);
-    border-radius: 12px;
+    border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
     opacity: 0;
     transform: translateY(40px);
-    transition: 0.6s ease;
+    transition: 0.5s ease;
 }
 
 .game-item.show {
@@ -91,54 +89,52 @@ header {
     transform: scale(1.03);
 }
 
-/* IMAGE */
+/* IMG */
 .game-item img {
     width: 100%;
 }
 
 /* CONTENT */
 .game-content {
-    padding: 15px;
+    padding: 10px;
+}
+
+.game-content h3 {
+    font-size: 15px;
 }
 
 .game-content p {
-    font-size: 14px;
+    font-size: 13px;
     color: #777;
 }
 
-/* BUTTONS */
+/* BOTONES */
 .btn-group {
-    margin-top: 10px;
     display: flex;
-    gap: 10px;
+    gap: 8px;
+    margin-top: 10px;
 }
 
 .download-btn {
     flex: 1;
-    padding: 10px;
+    padding: 8px;
     text-align: center;
     background: var(--accent);
     color: white;
-    border-radius: 8px;
+    border-radius: 6px;
     text-decoration: none;
+    font-size: 13px;
 }
 
-.link-btn {
+.green-btn {
     flex: 1;
-    padding: 10px;
+    padding: 8px;
     text-align: center;
     background: var(--green);
     color: white;
-    border-radius: 8px;
+    border-radius: 6px;
     text-decoration: none;
-}
-
-.download-btn:hover {
-    background: #005fa3;
-}
-
-.link-btn:hover {
-    background: #1e7e34;
+    font-size: 13px;
 }
 
 /* FOOTER */
@@ -155,8 +151,6 @@ footer {
 
 <header>
     <h1>🎮 Juegos Nintendo Switch</h1>
-    <p>Compatible con emuladores</p>
-
     <button class="toggle-btn" onclick="toggleDark()">🌙</button>
 
     <div class="search-box">
@@ -164,7 +158,7 @@ footer {
     </div>
 </header>
 
-<div class="game-list" id="gameList">
+<div class="game-list">
 
     <!-- JUEGO -->
     <div class="game-item">
@@ -172,36 +166,20 @@ footer {
         <div class="game-content">
             <h3>Zelda Breath of the Wild</h3>
             <p>Mundo abierto lleno de exploración.</p>
+
             <div class="btn-group">
-                <a href="#" class="download-btn">Descargar</a>
-                <a href="#" class="link-btn">Enlace</a>
+
+                <!-- 🔽 PEGA TU LINK DE DESCARGA AQUÍ -->
+                <a href="AQUI_TU_LINK_1" class="download-btn">Descargar</a>
+
+                <!-- 🔽 SEGUNDO LINK (OPCIONAL / RESPALDO) -->
+                <a href="AQUI_TU_LINK_2" class="green-btn">Descargar</a>
+
             </div>
         </div>
     </div>
 
-    <div class="game-item">
-        <img src="https://art.gametdb.com/switch/box/US/AABPA.png">
-        <div class="game-content">
-            <h3>Mario Kart 8 Deluxe</h3>
-            <p>Carreras rápidas y divertidas.</p>
-            <div class="btn-group">
-                <a href="#" class="download-btn">Descargar</a>
-                <a href="#" class="link-btn">Enlace</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="game-item">
-        <img src="https://art.gametdb.com/switch/box/MX/AAABA.png">
-        <div class="game-content">
-            <h3>Super Smash Bros Ultimate</h3>
-            <p>Batallas épicas multijugador.</p>
-            <div class="btn-group">
-                <a href="#" class="download-btn">Descargar</a>
-                <a href="#" class="link-btn">Enlace</a>
-            </div>
-        </div>
-    </div>
+    <!-- DUPLICA ESTE BLOQUE PARA MÁS JUEGOS -->
 
 </div>
 
@@ -221,19 +199,19 @@ document.getElementById("search").addEventListener("keyup", function() {
     let games = document.querySelectorAll(".game-item");
 
     games.forEach(game => {
-        let title = game.innerText.toLowerCase();
-        game.style.display = title.includes(filter) ? "block" : "none";
+        let text = game.innerText.toLowerCase();
+        game.style.display = text.includes(filter) ? "" : "none";
     });
 });
 
-// ✨ ANIMACIÓN OPTIMIZADA
+// ✨ ANIMACIÓN EFICIENTE
 const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             entry.target.classList.add("show");
         }
     });
-}, { threshold: 0.2 });
+});
 
 document.querySelectorAll(".game-item").forEach(el => {
     observer.observe(el);
