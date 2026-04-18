@@ -3,146 +3,124 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Juegos Nintendo Switch</title>
+<title>Juegos Switch</title>
 
 <style>
 :root {
-    --bg: #f5f5f5;
-    --card: #ffffff;
-    --text: #222;
-    --accent: #0074cc;
-    --green: #28a745;
-}
-
-body.dark {
-    --bg: #121212;
-    --card: #1e1e1e;
-    --text: #eaeaea;
-    --accent: #4da3ff;
-    --green: #34d058;
+    --bg:#111;
+    --card:#1c1c1c;
+    --text:#fff;
+    --accent:#0074cc;
+    --green:#28a745;
 }
 
 body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background: var(--bg);
-    color: var(--text);
+    margin:0;
+    font-family:sans-serif;
+    background:var(--bg);
+    color:var(--text);
 }
 
 /* HEADER */
-header {
-    background: linear-gradient(135deg, var(--accent), #00c6ff);
-    color: white;
-    text-align: center;
-    padding: 30px 20px;
-    position: relative;
+header{
+    padding:20px;
+    background:linear-gradient(90deg,#000,#222);
+    position:sticky;
+    top:0;
+    z-index:10;
 }
 
-.toggle-btn {
-    position: absolute;
-    right: 20px;
-    top: 20px;
-    background: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 20px;
-    cursor: pointer;
+input{
+    padding:10px;
+    width:250px;
+    border-radius:20px;
+    border:none;
 }
 
-/* BUSCADOR */
-.search-box {
-    margin-top: 15px;
+/* FILA NETFLIX */
+.row {
+    margin:20px 0;
 }
 
-.search-box input {
-    padding: 10px;
-    width: 250px;
-    border-radius: 20px;
-    border: none;
+.row h2{
+    margin-left:20px;
 }
 
-/* GRID → AHORA MÁS RESPONSIVE */
-.game-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 15px;
-    padding: 20px;
+/* CONTENEDOR SCROLL */
+.row-container{
+    display:flex;
+    overflow-x:auto;
+    scroll-behavior:smooth;
+    padding:20px;
+    gap:15px;
+}
+
+.row-container::-webkit-scrollbar{
+    height:6px;
+}
+
+.row-container::-webkit-scrollbar-thumb{
+    background:#444;
 }
 
 /* CARD */
-.game-item {
-    background: var(--card);
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-    opacity: 0;
-    transform: translateY(40px);
-    transition: 0.5s ease;
+.game{
+    min-width:180px;
+    background:var(--card);
+    border-radius:10px;
+    overflow:hidden;
+    flex-shrink:0;
+    transition:0.3s;
 }
 
-.game-item.show {
-    opacity: 1;
-    transform: translateY(0);
+.game:hover{
+    transform:scale(1.08);
 }
 
-.game-item:hover {
-    transform: scale(1.03);
-}
-
-/* IMG */
-.game-item img {
-    width: 100%;
+.game img{
+    width:100%;
 }
 
 /* CONTENT */
-.game-content {
-    padding: 10px;
+.content{
+    padding:10px;
 }
 
-.game-content h3 {
-    font-size: 15px;
+.content h4{
+    font-size:14px;
+    margin:5px 0;
 }
 
-.game-content p {
-    font-size: 13px;
-    color: #777;
+.content p{
+    font-size:12px;
+    color:#aaa;
 }
 
 /* BOTONES */
-.btn-group {
-    display: flex;
-    gap: 8px;
-    margin-top: 10px;
+.btns{
+    display:flex;
+    gap:5px;
+    margin-top:8px;
 }
 
-.download-btn {
-    flex: 1;
-    padding: 8px;
-    text-align: center;
-    background: var(--accent);
-    color: white;
-    border-radius: 6px;
-    text-decoration: none;
-    font-size: 13px;
+.btn{
+    flex:1;
+    padding:6px;
+    font-size:12px;
+    text-align:center;
+    border-radius:5px;
+    text-decoration:none;
+    color:#fff;
 }
 
-.green-btn {
-    flex: 1;
-    padding: 8px;
-    text-align: center;
-    background: var(--green);
-    color: white;
-    border-radius: 6px;
-    text-decoration: none;
-    font-size: 13px;
-}
+.blue{ background:var(--accent); }
+.green{ background:var(--green); }
 
-/* FOOTER */
-footer {
-    text-align: center;
-    padding: 15px;
-    background: #333;
-    color: white;
+/* MOBILE */
+@media(max-width:600px){
+    .game{
+        min-width:140px;
+    }
 }
 </style>
 </head>
@@ -150,71 +128,84 @@ footer {
 <body>
 
 <header>
-    <h1>🎮 Juegos Nintendo Switch</h1>
-    <button class="toggle-btn" onclick="toggleDark()">🌙</button>
-
-    <div class="search-box">
-        <input type="text" id="search" placeholder="Buscar juego...">
-    </div>
+    <h1>🎮 Juegos Switch</h1>
+    <input type="text" id="search" placeholder="Buscar...">
 </header>
 
-<div class="game-list">
-
-    <!-- JUEGO -->
-    <div class="game-item">
-        <img src="https://art.gametdb.com/switch/box2/US/AAAAA.png">
-        <div class="game-content">
-            <h3>Zelda Breath of the Wild</h3>
-            <p>Mundo abierto lleno de exploración.</p>
-
-            <div class="btn-group">
-
-                <!-- 🔽 PEGA TU LINK DE DESCARGA AQUÍ -->
-                <a href="AQUI_TU_LINK_1" class="download-btn">Descargar</a>
-
-                <!-- 🔽 SEGUNDO LINK (OPCIONAL / RESPALDO) -->
-                <a href="AQUI_TU_LINK_2" class="green-btn">Descargar</a>
-
-            </div>
-        </div>
-    </div>
-
-    <!-- DUPLICA ESTE BLOQUE PARA MÁS JUEGOS -->
-
+<!-- FILA 1 -->
+<div class="row">
+    <h2>Populares</h2>
+    <div class="row-container" id="row1"></div>
 </div>
 
-<footer>
-    <p>© 2026 Juegos Switch</p>
-</footer>
+<!-- FILA 2 -->
+<div class="row">
+    <h2>Aventura</h2>
+    <div class="row-container" id="row2"></div>
+</div>
 
 <script>
-// 🌙 MODO OSCURO
-function toggleDark() {
-    document.body.classList.toggle("dark");
+// 🎮 BASE DE DATOS (AQUÍ AGREGAS JUEGOS)
+const juegos = [
+{
+    nombre:"Zelda BOTW",
+    desc:"Exploración en mundo abierto",
+    img:"https://art.gametdb.com/switch/box2/US/AAAAA.png",
+    cat:"row1",
+    link1:"AQUI_LINK_1",
+    link2:"AQUI_LINK_2"
+},
+{
+    nombre:"Mario Kart 8",
+    desc:"Carreras divertidas",
+    img:"https://art.gametdb.com/switch/box/US/AABPA.png",
+    cat:"row1",
+    link1:"AQUI_LINK_1",
+    link2:"AQUI_LINK_2"
+},
+{
+    nombre:"Smash Bros",
+    desc:"Batallas épicas",
+    img:"https://art.gametdb.com/switch/box/MX/AAABA.png",
+    cat:"row2",
+    link1:"AQUI_LINK_1",
+    link2:"AQUI_LINK_2"
+}
+];
+
+// ⚡ CARGA DINÁMICA
+function cargar(){
+    juegos.forEach(j=>{
+        let card = document.createElement("div");
+        card.className="game";
+
+        card.innerHTML=`
+            <img src="${j.img}">
+            <div class="content">
+                <h4>${j.nombre}</h4>
+                <p>${j.desc}</p>
+                <div class="btns">
+                    <!-- 🔽 EDITA AQUÍ -->
+                    <a href="${j.link1}" class="btn blue">Descargar</a>
+                    <a href="${j.link2}" class="btn green">Descargar</a>
+                </div>
+            </div>
+        `;
+
+        document.getElementById(j.cat).appendChild(card);
+    });
 }
 
+cargar();
+
 // 🔍 BUSCADOR
-document.getElementById("search").addEventListener("keyup", function() {
-    let filter = this.value.toLowerCase();
-    let games = document.querySelectorAll(".game-item");
+document.getElementById("search").addEventListener("keyup", e=>{
+    let val = e.target.value.toLowerCase();
 
-    games.forEach(game => {
-        let text = game.innerText.toLowerCase();
-        game.style.display = text.includes(filter) ? "" : "none";
+    document.querySelectorAll(".game").forEach(card=>{
+        let txt = card.innerText.toLowerCase();
+        card.style.display = txt.includes(val) ? "block":"none";
     });
-});
-
-// ✨ ANIMACIÓN EFICIENTE
-const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add("show");
-        }
-    });
-});
-
-document.querySelectorAll(".game-item").forEach(el => {
-    observer.observe(el);
 });
 </script>
 
