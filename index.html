@@ -11,6 +11,7 @@
     --card: #ffffff;
     --text: #222;
     --accent: #0074cc;
+    --green: #28a745;
 }
 
 body.dark {
@@ -18,6 +19,7 @@ body.dark {
     --card: #1e1e1e;
     --text: #eaeaea;
     --accent: #4da3ff;
+    --green: #34d058;
 }
 
 body {
@@ -25,7 +27,6 @@ body {
     font-family: 'Segoe UI', sans-serif;
     background: var(--bg);
     color: var(--text);
-    transition: all 0.3s ease;
 }
 
 /* HEADER */
@@ -37,17 +38,29 @@ header {
     position: relative;
 }
 
+/* SEARCH */
+.search-box {
+    margin-top: 15px;
+}
+
+.search-box input {
+    padding: 10px;
+    width: 250px;
+    border-radius: 20px;
+    border: none;
+    outline: none;
+}
+
+/* BUTTON TOGGLE */
 .toggle-btn {
     position: absolute;
     right: 20px;
     top: 20px;
     background: white;
-    color: black;
     border: none;
     padding: 8px 12px;
     border-radius: 20px;
     cursor: pointer;
-    font-size: 12px;
 }
 
 /* GRID */
@@ -63,22 +76,19 @@ header {
     background: var(--card);
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    transform: translateY(20px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
     opacity: 0;
-    animation: fadeUp 0.6s forwards;
+    transform: translateY(40px);
+    transition: 0.6s ease;
+}
+
+.game-item.show {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .game-item:hover {
     transform: scale(1.03);
-}
-
-/* ANIMATION */
-@keyframes fadeUp {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 /* IMAGE */
@@ -91,29 +101,44 @@ header {
     padding: 15px;
 }
 
-.game-content h3 {
-    margin: 10px 0;
-}
-
 .game-content p {
     font-size: 14px;
     color: #777;
 }
 
-/* BUTTON */
-.download-btn {
-    display: inline-block;
+/* BUTTONS */
+.btn-group {
     margin-top: 10px;
-    padding: 10px 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.download-btn {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
     background: var(--accent);
     color: white;
     border-radius: 8px;
     text-decoration: none;
-    transition: 0.3s;
+}
+
+.link-btn {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    background: var(--green);
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
 }
 
 .download-btn:hover {
     background: #005fa3;
+}
+
+.link-btn:hover {
+    background: #1e7e34;
 }
 
 /* FOOTER */
@@ -131,18 +156,26 @@ footer {
 <header>
     <h1>🎮 Juegos Nintendo Switch</h1>
     <p>Compatible con emuladores</p>
-    <button class="toggle-btn" onclick="toggleDark()">🌙 Modo</button>
+
+    <button class="toggle-btn" onclick="toggleDark()">🌙</button>
+
+    <div class="search-box">
+        <input type="text" id="search" placeholder="Buscar juego...">
+    </div>
 </header>
 
-<div class="game-list">
+<div class="game-list" id="gameList">
 
     <!-- JUEGO -->
     <div class="game-item">
         <img src="https://art.gametdb.com/switch/box2/US/AAAAA.png">
         <div class="game-content">
-            <h3>Zelda: Breath of the Wild</h3>
-            <p>Aventura en mundo abierto llena de exploración y secretos.</p>
-            <a href="#" class="download-btn">⬇ Descargar</a>
+            <h3>Zelda Breath of the Wild</h3>
+            <p>Mundo abierto lleno de exploración.</p>
+            <div class="btn-group">
+                <a href="#" class="download-btn">Descargar</a>
+                <a href="#" class="link-btn">Enlace</a>
+            </div>
         </div>
     </div>
 
@@ -150,8 +183,11 @@ footer {
         <img src="https://art.gametdb.com/switch/box/US/AABPA.png">
         <div class="game-content">
             <h3>Mario Kart 8 Deluxe</h3>
-            <p>Carreras caóticas con ítems y multijugador.</p>
-            <a href="#" class="download-btn">⬇ Descargar</a>
+            <p>Carreras rápidas y divertidas.</p>
+            <div class="btn-group">
+                <a href="#" class="download-btn">Descargar</a>
+                <a href="#" class="link-btn">Enlace</a>
+            </div>
         </div>
     </div>
 
@@ -159,35 +195,11 @@ footer {
         <img src="https://art.gametdb.com/switch/box/MX/AAABA.png">
         <div class="game-content">
             <h3>Super Smash Bros Ultimate</h3>
-            <p>Combates épicos con personajes icónicos.</p>
-            <a href="#" class="download-btn">⬇ Descargar</a>
-        </div>
-    </div>
-
-    <div class="game-item">
-        <img src="https://art.gametdb.com/switch/box/US/AXN7A.png">
-        <div class="game-content">
-            <h3>Zelda: Tears of the Kingdom</h3>
-            <p>Nueva aventura en Hyrule con mecánicas innovadoras.</p>
-            <a href="#" class="download-btn">⬇ Descargar</a>
-        </div>
-    </div>
-
-    <div class="game-item">
-        <img src="https://art.gametdb.com/switch/box/MX/BLFGA.png">
-        <div class="game-content">
-            <h3>Tomodachi Life</h3>
-            <p>Simulador social divertido y caótico.</p>
-            <a href="#" class="download-btn">⬇ Descargar</a>
-        </div>
-    </div>
-
-    <div class="game-item">
-        <img src="https://art.gametdb.com/switch/box/US/BGW5A.png">
-        <div class="game-content">
-            <h3>Metroid Prime 4</h3>
-            <p>Exploración sci-fi con acción intensa.</p>
-            <a href="#" class="download-btn">⬇ Descargar</a>
+            <p>Batallas épicas multijugador.</p>
+            <div class="btn-group">
+                <a href="#" class="download-btn">Descargar</a>
+                <a href="#" class="link-btn">Enlace</a>
+            </div>
         </div>
     </div>
 
@@ -198,9 +210,34 @@ footer {
 </footer>
 
 <script>
+// 🌙 MODO OSCURO
 function toggleDark() {
     document.body.classList.toggle("dark");
 }
+
+// 🔍 BUSCADOR
+document.getElementById("search").addEventListener("keyup", function() {
+    let filter = this.value.toLowerCase();
+    let games = document.querySelectorAll(".game-item");
+
+    games.forEach(game => {
+        let title = game.innerText.toLowerCase();
+        game.style.display = title.includes(filter) ? "block" : "none";
+    });
+});
+
+// ✨ ANIMACIÓN OPTIMIZADA
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add("show");
+        }
+    });
+}, { threshold: 0.2 });
+
+document.querySelectorAll(".game-item").forEach(el => {
+    observer.observe(el);
+});
 </script>
 
 </body>
