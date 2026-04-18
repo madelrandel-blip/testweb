@@ -3,97 +3,95 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Juegos Switch</title>
+<title>Tienda Switch</title>
 
 <style>
-:root {
-    --bg:#111;
-    --card:#1c1c1c;
-    --text:#fff;
-    --accent:#0074cc;
-    --green:#28a745;
+:root{
+    --bg:#0b0f14;
+    --card:#1b2838;
+    --text:#c7d5e0;
+    --accent:#66c0f4;
+    --green:#5ba32b;
 }
 
 body{
     margin:0;
-    font-family:sans-serif;
+    font-family:Arial, sans-serif;
     background:var(--bg);
     color:var(--text);
 }
 
 /* HEADER */
 header{
-    padding:20px;
-    background:linear-gradient(90deg,#000,#222);
-    position:sticky;
-    top:0;
-    z-index:10;
+    background:#171a21;
+    padding:15px;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:15px;
 }
 
-input{
-    padding:10px;
-    width:260px;
-    border-radius:20px;
+header h1{
+    margin:0;
+    font-size:20px;
+}
+
+.search{
+    padding:8px;
+    border-radius:5px;
     border:none;
 }
 
-/* FILAS */
-.row{
-    margin:25px 0;
-}
-
-.row h2{
-    margin-left:20px;
-}
-
-/* SCROLL HORIZONTAL MEJORADO */
-.row-container{
-    display:flex;
-    overflow-x:auto;
-    gap:18px;
+/* GRID TIPO TIENDA */
+.store{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+    gap:20px;
     padding:20px;
-    scroll-behavior:smooth;
 }
 
-.row-container::-webkit-scrollbar{
-    height:8px;
-}
-
-.row-container::-webkit-scrollbar-thumb{
-    background:#555;
-    border-radius:10px;
-}
-
-/* CARD MÁS COMPACTA (MEJOR PARA PC) */
-.game{
-    min-width:200px;
-    max-width:200px;
+/* CARD */
+.card{
     background:var(--card);
-    border-radius:10px;
+    border-radius:6px;
     overflow:hidden;
-    flex-shrink:0;
+    position:relative;
     transition:0.3s;
 }
 
-.game:hover{
-    transform:scale(1.12);
+.card:hover{
+    transform:scale(1.05);
 }
 
-.game img{
+/* IMAGEN */
+.card img{
     width:100%;
+    display:block;
 }
 
-/* CONTENIDO */
-.content{
+/* OVERLAY HOVER */
+.overlay{
+    position:absolute;
+    bottom:0;
+    left:0;
+    right:0;
+    background:rgba(0,0,0,0.85);
     padding:10px;
+    opacity:0;
+    transition:0.3s;
 }
 
-.content h4{
-    font-size:14px;
+.card:hover .overlay{
+    opacity:1;
+}
+
+/* TEXT */
+.overlay h3{
     margin:5px 0;
+    font-size:14px;
 }
 
-.content p{
+.overlay p{
     font-size:12px;
     color:#aaa;
 }
@@ -101,35 +99,27 @@ input{
 /* BOTONES */
 .btns{
     display:flex;
-    gap:6px;
+    gap:5px;
     margin-top:8px;
 }
 
 .btn{
     flex:1;
     padding:6px;
-    font-size:12px;
     text-align:center;
-    border-radius:5px;
+    font-size:12px;
+    border-radius:4px;
     text-decoration:none;
-    color:#fff;
+    color:white;
 }
 
 .blue{ background:var(--accent); }
 .green{ background:var(--green); }
 
-/* PC → MÁS JUEGOS VISIBLES */
-@media(min-width:1200px){
-    .game{
-        min-width:180px;
-        max-width:180px;
-    }
-}
-
-/* MÓVIL */
+/* RESPONSIVE */
 @media(max-width:600px){
-    .game{
-        min-width:140px;
+    .store{
+        grid-template-columns: repeat(2,1fr);
     }
 }
 </style>
@@ -138,67 +128,53 @@ input{
 <body>
 
 <header>
-    <h1>🎮 Juegos Nintendo Switch</h1>
-    <input type="text" id="search" placeholder="Buscar juego...">
+    <h1>🎮 Tienda Switch</h1>
+    <input type="text" id="search" class="search" placeholder="Buscar juego...">
 </header>
 
-<div class="row">
-    <h2>Populares</h2>
-    <div class="row-container" id="row1"></div>
-</div>
+<div class="store" id="store"></div>
 
 <script>
-// 🎮 LISTA DE 20 JUEGOS POPULARES
+// 🎮 BASE DE DATOS (EDITA LINKS AQUÍ)
 const juegos = [
-
-{nombre:"Zelda Breath of the Wild", img:"https://art.gametdb.com/switch/box2/US/AAAAA.png", desc:"Mundo abierto", cat:"row1", link1:"#", link2:"#"},
-{nombre:"Zelda Tears of the Kingdom", img:"https://art.gametdb.com/switch/box/US/AXN7A.png", desc:"Nueva aventura", cat:"row1", link1:"#", link2:"#"},
-{nombre:"Mario Kart 8 Deluxe", img:"https://art.gametdb.com/switch/box/US/AABPA.png", desc:"Carreras", cat:"row1", link1:"#", link2:"#"},
-{nombre:"Super Smash Bros Ultimate", img:"https://art.gametdb.com/switch/box/MX/AAABA.png", desc:"Lucha", cat:"row1", link1:"#", link2:"#"},
-{nombre:"Super Mario Odyssey", img:"https://art.gametdb.com/switch/box/US/AAACA.png", desc:"Aventura", cat:"row1", link1:"#", link2:"#"},
-{nombre:"Pokemon Scarlet", img:"https://art.gametdb.com/switch/box/US/ALZXA.png", desc:"Pokemon", cat:"row1", link1:"#", link2:"#"},
-{nombre:"Pokemon Violet", img:"https://art.gametdb.com/switch/box/US/ALZYA.png", desc:"Pokemon", cat:"row1", link1:"#", link2:"#"},
-{nombre:"Animal Crossing New Horizons", img:"https://art.gametdb.com/switch/box/US/ACBAA.png", desc:"Simulación", cat:"row1", link1:"#", link2:"#"},
-{nombre:"Splatoon 3", img:"https://art.gametdb.com/switch/box/US/AV5JA.png", desc:"Shooter", cat:"row1", link1:"#", link2:"#"},
-{nombre:"Metroid Dread", img:"https://art.gametdb.com/switch/box/US/AYL8A.png", desc:"Acción", cat:"row1", link1:"#", link2:"#"},
-{nombre:"Luigis Mansion 3", img:"https://art.gametdb.com/switch/box/US/AG3JA.png", desc:"Aventura", cat:"row1", link1:"#", link2:"#"},
-{nombre:"Fire Emblem Three Houses", img:"https://art.gametdb.com/switch/box/US/ANVYA.png", desc:"RPG", cat:"row1", link1:"#", link2:"#"},
-{nombre:"Xenoblade Chronicles 3", img:"https://art.gametdb.com/switch/box/US/AX9EA.png", desc:"RPG", cat:"row1", link1:"#", link2:"#"},
-{nombre:"Kirby and the Forgotten Land", img:"https://art.gametdb.com/switch/box/US/ARZGA.png", desc:"Plataformas", cat:"row1", link1:"#", link2:"#"},
-{nombre:"Donkey Kong Tropical Freeze", img:"https://art.gametdb.com/switch/box/US/AF7KA.png", desc:"Plataformas", cat:"row1", link1:"#", link2:"#"},
-{nombre:"Mario Party Superstars", img:"https://art.gametdb.com/switch/box/US/AZ82A.png", desc:"Fiesta", cat:"row1", link1:"#", link2:"#"},
-{nombre:"Bayonetta 3", img:"https://art.gametdb.com/switch/box/US/AXB7A.png", desc:"Acción", cat:"row1", link1:"#", link2:"#"},
-{nombre:"Hollow Knight", img:"https://art.gametdb.com/switch/box/US/AKLMA.png", desc:"Indie", cat:"row1", link1:"#", link2:"#"},
-{nombre:"Stardew Valley", img:"https://art.gametdb.com/switch/box/US/ABQCA.png", desc:"Simulación", cat:"row1", link1:"#", link2:"#"},
-{nombre:"Minecraft", img:"https://art.gametdb.com/switch/box/US/AFQEA.png", desc:"Sandbox", cat:"row1", link1:"#", link2:"#"}
-
+{nombre:"Zelda BOTW", img:"https://art.gametdb.com/switch/box2/US/AAAAA.png", desc:"Mundo abierto", link1:"#", link2:"#"},
+{nombre:"Zelda TOTK", img:"https://art.gametdb.com/switch/box/US/AXN7A.png", desc:"Aventura", link1:"#", link2:"#"},
+{nombre:"Mario Kart 8", img:"https://art.gametdb.com/switch/box/US/AABPA.png", desc:"Carreras", link1:"#", link2:"#"},
+{nombre:"Smash Ultimate", img:"https://art.gametdb.com/switch/box/MX/AAABA.png", desc:"Lucha", link1:"#", link2:"#"},
+{nombre:"Mario Odyssey", img:"https://art.gametdb.com/switch/box/US/AAACA.png", desc:"Aventura", link1:"#", link2:"#"},
+{nombre:"Pokemon Scarlet", img:"https://art.gametdb.com/switch/box/US/ALZXA.png", desc:"Pokemon", link1:"#", link2:"#"},
+{nombre:"Animal Crossing", img:"https://art.gametdb.com/switch/box/US/ACBAA.png", desc:"Simulación", link1:"#", link2:"#"},
+{nombre:"Metroid Dread", img:"https://art.gametdb.com/switch/box/US/AYL8A.png", desc:"Acción", link1:"#", link2:"#"},
+{nombre:"Kirby Forgotten Land", img:"https://art.gametdb.com/switch/box/US/ARZGA.png", desc:"Plataformas", link1:"#", link2:"#"},
+{nombre:"Minecraft", img:"https://art.gametdb.com/switch/box/US/AFQEA.png", desc:"Sandbox", link1:"#", link2:"#"}
 ];
 
 // ⚡ CARGA DINÁMICA
 function cargar(){
+    let cont = document.getElementById("store");
+    cont.innerHTML="";
+
     juegos.forEach(j=>{
         let card=document.createElement("div");
-        card.className="game";
+        card.className="card";
 
         card.innerHTML=`
-        <img src="${j.img}">
-        <div class="content">
-            <h4>${j.nombre}</h4>
-            <p>${j.desc}</p>
+            <img src="${j.img}">
+            <div class="overlay">
+                <h3>${j.nombre}</h3>
+                <p>${j.desc}</p>
 
-            <div class="btns">
+                <div class="btns">
+                    <!-- 🔽 PON TU LINK -->
+                    <a href="${j.link1}" class="btn blue">Descargar</a>
 
-                <!-- 🔽 PON TU LINK AQUÍ -->
-                <a href="${j.link1}" class="btn blue">Descargar</a>
-
-                <!-- 🔽 LINK SECUNDARIO -->
-                <a href="${j.link2}" class="btn green">Descargar</a>
-
+                    <!-- 🔽 LINK EXTRA -->
+                    <a href="${j.link2}" class="btn green">Descargar</a>
+                </div>
             </div>
-        </div>
         `;
 
-        document.getElementById(j.cat).appendChild(card);
+        cont.appendChild(card);
     });
 }
 cargar();
@@ -206,8 +182,9 @@ cargar();
 // 🔍 BUSCADOR
 document.getElementById("search").addEventListener("keyup", e=>{
     let val=e.target.value.toLowerCase();
-    document.querySelectorAll(".game").forEach(card=>{
-        card.style.display=card.innerText.toLowerCase().includes(val)?"block":"none";
+
+    document.querySelectorAll(".card").forEach(c=>{
+        c.style.display = c.innerText.toLowerCase().includes(val) ? "block":"none";
     });
 });
 </script>
