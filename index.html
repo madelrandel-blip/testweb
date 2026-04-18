@@ -116,48 +116,19 @@ header{
 <div class="store" id="store"></div>
 
 <script>
-<script>
-// ⚡ CARGAR DESDE JSON
-async function cargar(){
-    try {
-        const res = await fetch("juegos.json");
-        const juegos = await res.json();
-
-        let cont = document.getElementById("store");
-        cont.innerHTML = "";
-
-        juegos.forEach(j=>{
-            let card = document.createElement("div");
-            card.className = "card";
-
-            card.innerHTML = `
-                <img src="${j.img}">
-                <div class="content">
-                    <h3>${j.nombre}</h3>
-                    <p>${j.desc}</p>
-
-                    <div class="btns">
-
-                        <!-- 🔽 PON TU LINK EN juegos.json -->
-                        <a href="${j.link1}" class="btn blue">Descargar</a>
-
-                        <!-- 🔽 LINK SECUNDARIO -->
-                        <a href="${j.link2}" class="btn green">Descargar</a>
-
-                    </div>
-                </div>
-            `;
-
-            cont.appendChild(card);
-        });
-
-    } catch (error) {
-        console.error("Error cargando juegos:", error);
-    }
-}
-
-cargar();
-</script>
+// 🎮 JUEGOS
+const juegos = [
+{nombre:"Zelda BOTW", img:"https://art.gametdb.com/switch/box2/US/AAAAA.png", desc:"Mundo abierto", link1:"#", link2:"#"},
+{nombre:"Zelda TOTK", img:"https://art.gametdb.com/switch/box/US/AXN7A.png", desc:"Aventura", link1:"#", link2:"#"},
+{nombre:"Mario Kart 8", img:"https://art.gametdb.com/switch/box/US/AABPA.png", desc:"Carreras", link1:"#", link2:"#"},
+{nombre:"Smash Ultimate", img:"https://art.gametdb.com/switch/box/MX/AAABA.png", desc:"Lucha", link1:"#", link2:"#"},
+{nombre:"Mario Odyssey", img:"https://art.gametdb.com/switch/box/US/AAACA.png", desc:"Aventura", link1:"#", link2:"#"},
+{nombre:"Pokemon Scarlet", img:"https://art.gametdb.com/switch/box/US/ALZXA.png", desc:"Pokemon", link1:"#", link2:"#"},
+{nombre:"Animal Crossing", img:"https://art.gametdb.com/switch/box/US/ACBAA.png", desc:"Simulación", link1:"#", link2:"#"},
+{nombre:"Metroid Dread", img:"https://art.gametdb.com/switch/box/US/AYL8A.png", desc:"Acción", link1:"#", link2:"#"},
+{nombre:"Kirby Forgotten Land", img:"https://art.gametdb.com/switch/box/US/ARZGA.png", desc:"Plataformas", link1:"#", link2:"#"},
+{nombre:"Minecraft", img:"https://art.gametdb.com/switch/box/US/AFQEA.png", desc:"Sandbox", link1:"#", link2:"#"}
+];
 
 // ⚡ CARGA DINÁMICA
 function cargar(){
