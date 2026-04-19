@@ -69,7 +69,7 @@ header{
     box-shadow:0 0 10px var(--accent);
 }
 
-/* LOGIN MODERNO */
+/* LOGIN */
 #loginBox{
     display:none;
     position:fixed;
@@ -108,12 +108,6 @@ header{
     background:#020617;
     color:white;
     border:1px solid rgba(255,255,255,0.08);
-    transition:0.25s;
-}
-
-.login-content input:focus{
-    border:1px solid var(--accent);
-    box-shadow:0 0 10px var(--accent);
 }
 
 .login-content button{
@@ -125,17 +119,6 @@ header{
     cursor:pointer;
     background:linear-gradient(135deg,var(--accent),var(--accent2));
     color:white;
-    transition:0.25s;
-}
-
-.login-content button:hover{
-    transform:scale(1.05);
-    box-shadow:0 0 12px var(--accent);
-}
-
-@keyframes fadeIn{
-    from{opacity:0; transform:translateY(10px);}
-    to{opacity:1; transform:translateY(0);}
 }
 
 /* PANEL */
@@ -146,16 +129,12 @@ header{
     position:relative;
     z-index:1;
 }
+
 #adminPanel input{
     padding:8px;
     margin:5px;
     border-radius:5px;
     border:none;
-}
-
-/* modo edición */
-#btnGuardar.editando{
-    background:linear-gradient(135deg,#f59e0b,#d97706);
 }
 
 /* GRID */
@@ -177,49 +156,44 @@ header{
     display:flex;
     flex-direction:column;
 }
-.card:hover{transform:scale(1.05);}
 
-/* 👇 ajuste leve para uniformidad visual */
+.card:hover{
+    transform:scale(1.05);
+}
+
+/* IMAGEN UNIFORME */
 .card img{
     width:100%;
     height:120px;
     object-fit:cover;
 }
 
+/* CONTENIDO */
 .content{
     padding:10px;
     display:flex;
     flex-direction:column;
     flex:1;
-    justify-content:space-between; /* 👈 alineación consistente */
 }
 
-/* 👇 títulos con altura fija */
+/* FIX TEXTO */
 .content h3{
     font-size:14px;
     margin:5px 0;
-
-    display:-webkit-box;
-    -webkit-line-clamp:2;
-    -webkit-box-orient:vertical;
+    line-height:1.2;
+    height:34px;
     overflow:hidden;
-
-    min-height:34px;
 }
 
-/* 👇 descripciones con altura fija */
 .content p{
     font-size:12px;
     color:#9aa7b1;
-
-    display:-webkit-box;
-    -webkit-line-clamp:2;
-    -webkit-box-orient:vertical;
+    line-height:1.2;
+    height:30px;
     overflow:hidden;
-
-    min-height:30px;
 }
 
+/* BOTONES */
 .btns{
     display:flex;
     gap:6px;
@@ -228,6 +202,7 @@ header{
     transform:translateY(10px);
     transition:0.3s;
 }
+
 .card:hover .btns{
     opacity:1;
     transform:translateY(0);
@@ -242,6 +217,7 @@ header{
     border:none;
     cursor:pointer;
 }
+
 .blue{background:var(--accent);}
 .green{background:var(--green);}
 
