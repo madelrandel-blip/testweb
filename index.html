@@ -4,227 +4,64 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Luma Switch - Juegos, Emuladores y Bios</title>
-<meta name="description" content="Luma Switch - Descarga juegos, emuladores y bios fácilmente.">
+<title>Luma Switch</title>
 
 <style>
-:root{
-    --bg:#05070d;
-    --card:#0f172a;
-    --text:#e0f2ff;
-    --accent:#7dd3fc;
-    --accent2:#a78bfa;
-    --green:#22c55e;
-}
-
 body{
-    margin:0;
-    font-family:Arial;
-    color:var(--text);
-    background: radial-gradient(circle at 20% 30%, #1e3a8a, transparent),
-                radial-gradient(circle at 80% 70%, #581c87, transparent),
-                var(--bg);
+margin:0;
+font-family:Arial;
+background:#0b0f1a;
+color:white;
 }
 
-/* estrellas */
-.stars{position:fixed;width:100%;height:100%;z-index:-1;}
-.star{position:absolute;width:2px;height:2px;background:white;animation: twinkle 2s infinite alternate;}
-@keyframes twinkle{from{opacity:0.2;}to{opacity:1;}}
-
-/* header */
 header{
-    background:rgba(10,15,30,0.7);
-    backdrop-filter: blur(10px);
-    padding:15px;
-    display:flex;
-    gap:15px;
-    align-items:center;
+padding:15px;
+display:flex;
+gap:10px;
+background:#111827;
 }
 
-.search{padding:8px;border-radius:5px;border:none;}
-
-.header-btn{
-    margin-left:auto;
-    display:flex;
-    gap:10px;
+button{
+padding:8px;
+cursor:pointer;
 }
 
-.header-btn button{
-    padding:8px 14px;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-    background:linear-gradient(45deg,var(--accent),var(--accent2));
-    color:white;
-    display:flex;
-    align-items:center;
-    gap:6px;
-    transition:0.3s;
-}
-
-.header-btn button.active{
-    box-shadow:0 0 10px var(--accent);
-    transform:scale(1.05);
-}
-
-/* animación pestañas */
-.fade{
-    animation:fadeIn 0.35s ease;
-}
-@keyframes fadeIn{
-    from{opacity:0; transform:translateY(10px);}
-    to{opacity:1; transform:translateY(0);}
-}
-
-/* login */
-#loginBox{
-    display:none;
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.8);
-    justify-content:center;
-    align-items:center;
-}
-.login-content{
-    background:#0f172a;
-    padding:25px;
-    border-radius:10px;
-    text-align:center;
-}
-.login-content input{
-    width:90%;
-    padding:8px;
-    margin:6px 0;
-    border:none;
-    border-radius:5px;
-}
-
-/* botones login modernos */
-.login-content button{
-    padding:10px 16px;
-    margin:8px 5px 0;
-    border:none;
-    border-radius:10px;
-    cursor:pointer;
-    font-weight:bold;
-    color:white;
-    transition:all 0.25s ease;
-}
-.login-content button:first-of-type{
-    background:linear-gradient(135deg,#38bdf8,#6366f1);
-}
-.login-content button:last-of-type{
-    background:rgba(255,255,255,0.1);
-}
-
-/* panel */
-#adminPanel{
-    display:none;
-    background:rgba(10,15,30,0.8);
-    padding:20px;
-}
-#adminPanel input{
-    padding:8px;
-    margin:5px;
-    border-radius:5px;
-    border:none;
-}
-
-/* grid */
 .store{
-    display:grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
-    gap:18px;
-    padding:20px;
+display:grid;
+grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
+gap:15px;
+padding:20px;
 }
 
-/* card */
 .card{
-    background:rgba(15,23,42,0.8);
-    border-radius:10px;
-    overflow:hidden;
-    transition:0.3s;
-    display:flex;
-    flex-direction:column;
-}
-.card:hover{transform:scale(1.05);}
-.card img{width:100%;}
-
-/* contenido */
-.content{
-    padding:10px;
-    display:flex;
-    flex-direction:column;
-    flex:1;
-}
-.content h3{font-size:14px;margin:5px 0;}
-.content p{font-size:12px;color:#9aa7b1;}
-
-/* botones hover */
-.btns{
-    display:flex;
-    gap:6px;
-    margin-top:auto;
-    opacity:0;
-    transform:translateY(10px);
-    transition:0.3s;
-}
-.card:hover .btns{
-    opacity:1;
-    transform:translateY(0);
+background:#1f2937;
+border-radius:10px;
+overflow:hidden;
 }
 
-.btn{
-    flex:1;
-    padding:7px;
-    text-align:center;
-    font-size:12px;
-    border-radius:5px;
-    text-decoration:none;
-    color:white;
-}
-.blue{background:var(--accent);}
-.green{background:var(--green);}
+.card img{width:100%}
 
-.admin-actions{
-    display:flex;
-    gap:5px;
-    margin-top:5px;
-}
+.content{padding:10px}
+
+.admin-actions{margin-top:5px}
 </style>
 </head>
 
 <body>
 
-<div class="stars" id="stars"></div>
-
 <header>
-<h1>🌌 Luma Switch</h1>
-<input type="text" id="search" class="search" placeholder="Buscar...">
-
-<div class="header-btn">
-<button id="btnInicio" onclick="mostrarTienda()">🏠 Inicio</button>
-<button id="btnEmu" onclick="mostrarEmuladores()">🎮 Emuladores</button>
-<button id="btnBios" onclick="mostrarBios()">🧩 Bios/Keys</button>
-<button onclick="abrirLogin()">🔐 Admin</button>
-<button onclick="logout()" id="logoutBtn" style="display:none;">🚪 Salir</button>
-</div>
+<h2>Luma Switch</h2>
+<button onclick="abrirLogin()">Admin</button>
+<button onclick="logout()" id="logoutBtn" style="display:none;">Salir</button>
 </header>
 
-<!-- LOGIN -->
-<div id="loginBox">
-<div class="login-content">
-<h3>Admin</h3>
+<div id="loginBox" style="display:none;">
 <input id="user" placeholder="Usuario">
 <input id="pass" type="password" placeholder="Contraseña">
 <button onclick="login()">Entrar</button>
-<button onclick="cerrarLogin()">Cerrar</button>
-</div>
 </div>
 
-<!-- PANEL -->
-<div id="adminPanel">
-<h2>Panel Admin</h2>
+<div id="adminPanel" style="display:none; padding:10px;">
 <input id="nombre" placeholder="Nombre">
 <input id="img" placeholder="Imagen URL">
 <input id="desc" placeholder="Descripción">
@@ -233,199 +70,119 @@ header{
 <button onclick="agregarJuego()">Guardar</button>
 </div>
 
-<div class="store fade" id="store"></div>
-<div class="store fade" id="emuladores" style="display:none;"></div>
-<div class="store fade" id="bios" style="display:none;"></div>
+<div class="store" id="store"></div>
 
 <script>
-// estrellas
-for(let i=0;i<120;i++){
-let s=document.createElement("div");
-s.className="star";
-s.style.top=Math.random()*100+"%";
-s.style.left=Math.random()*100+"%";
-stars.appendChild(s);
-}
-
-// login
 let admin=false, editIndex=null;
 
-function abrirLogin(){loginBox.style.display="flex";}
-function cerrarLogin(){loginBox.style.display="none";}
-
+function abrirLogin(){loginBox.style.display="block";}
 function login(){
 if(user.value==="Mad" && pass.value==="Papel#19"){
 admin=true;
 adminPanel.style.display="block";
 logoutBtn.style.display="inline-block";
-cerrarLogin();
 cargar();
-}else alert("Datos incorrectos");
 }
-
+}
 function logout(){
 admin=false;
 adminPanel.style.display="none";
 logoutBtn.style.display="none";
 cargar();
 }
+</script>
 
-// pestañas + animación
-function activar(btn){
-document.querySelectorAll(".header-btn button").forEach(b=>b.classList.remove("active"));
-btn.classList.add("active");
-}
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-function mostrarTienda(){
-store.style.display="grid";
-emuladores.style.display="none";
-bios.style.display="none";
-store.classList.add("fade");
-activar(btnInicio);
-}
+/* 🔥 PEGA TU CONFIG AQUÍ */
+const firebaseConfig = {
+  apiKey: "AQUI",
+  authDomain: "AQUI",
+  projectId: "AQUI",
+};
 
-function mostrarEmuladores(){
-store.style.display="none";
-emuladores.style.display="grid";
-bios.style.display="none";
-emuladores.classList.add("fade");
-activar(btnEmu);
-}
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-function mostrarBios(){
-store.style.display="none";
-emuladores.style.display="none";
-bios.style.display="grid";
-bios.classList.add("fade");
-activar(btnBios);
-}
+window.db = db;
+window.firestore = { collection, getDocs, addDoc, deleteDoc, doc, updateDoc };
 
-window.onload=()=>activar(btnInicio);
+/* ========================= */
+/* FUNCIONES FIREBASE */
+/* ========================= */
 
-// JUEGOS COMPLETOS
-let juegos = [
-{nombre:"The Legend of Zelda: Breath of the Wild", img:"https://art.gametdb.com/switch/box2/US/AAAAA.png", desc:"Mundo abierto", link1:"#", link2:"#"},
-{nombre:"The Legend of Zelda: Tears of the Kingdom", img:"https://art.gametdb.com/switch/box/US/AXN7A.png", desc:"Aventura", link1:"#", link2:"#"},
-{nombre:"The Legend of Zelda: Skyward Sword", img:"https://art.gametdb.com/switch/box/US/AZ89A.png?1696859490", desc:"Aventura", link1:"https://www.mediafire.com/file/zl5eumnm7kgq5iw/The+Legend+of+Zelda+Skyward+Sword+HD+[v1.0.1].nsp/file", link2:"#"},
-{nombre:"Mario Kart 8 Deluxe", img:"https://art.gametdb.com/switch/box/US/AABPA.png", desc:"Carreras", link1:"#", link2:"#"},
-{nombre:"Super Smash Bros Ultimate", img:"https://art.gametdb.com/switch/box/MX/AAABA.png", desc:"Lucha", link1:"#", link2:"#"},
-{nombre:"Mario Odyssey", img:"https://art.gametdb.com/switch/box/US/AAACA.png", desc:"Aventura", link1:"#", link2:"#"},
-{nombre:"Pokemon Scarlet", img:"https://art.gametdb.com/switch/box/US/ALZXA.png", desc:"Pokemon", link1:"#", link2:"#"},
-{nombre:"Animal Crossing New Horizons", img:"https://art.gametdb.com/switch/box/US/ACBAA.png", desc:"Simulación", link1:"#", link2:"#"},
-{nombre:"Metroid Dread", img:"https://art.gametdb.com/switch/box/US/AYL8A.png", desc:"Acción", link1:"#", link2:"#"},
-{nombre:"Kirby Forgotten Land", img:"https://art.gametdb.com/switch/box/US/ARZGA.png", desc:"Plataformas", link1:"#", link2:"#"},
-{nombre:"Minecraft", img:"https://art.gametdb.com/switch/box/US/AEUCA.png", desc:"Sandbox", link1:"#", link2:"#"},
-{nombre:"Super Mario 3D World + Bowser's Fury", img:"https://art.gametdb.com/switch/box/US/AUZPA.png", desc:"Cooperativo", link1:"#", link2:"#"},
-{nombre:"Tomodachi Life Living the Dream", img:"https://art.gametdb.com/switch/box/CA/BLFGA.png?1775153578", desc:"Simulador", link1:"https://gofile.io/d/yq4GNq", link2:"#"}
-];
+window.cargar = async function(){
+store.innerHTML = "";
 
-// emuladores
-let listaEmuladores = [
-{nombre:"Yuzu Emulator", img:"https://upload.wikimedia.org/wikipedia/commons/7/7d/Yuzu_Logo.png", desc:"Nintendo Switch", link:"#"},
-{nombre:"Dolphin Emulator", img:"https://upload.wikimedia.org/wikipedia/commons/3/3a/Dolphin-logo.png", desc:"GameCube / Wii", link:"#"},
-{nombre:"PCSX2", img:"https://upload.wikimedia.org/wikipedia/commons/6/60/PCSX2_icon.png", desc:"PlayStation 2", link:"#"},
-{nombre:"PPSSPP", img:"https://upload.wikimedia.org/wikipedia/commons/0/06/PPSSPP_logo.svg", desc:"PSP", link:"#"}
-];
+const querySnapshot = await getDocs(collection(db, "juegos"));
 
-// bios
-let listaBios = [
-{nombre:"PS2 BIOS Pack", img:"https://upload.wikimedia.org/wikipedia/commons/6/60/PCSX2_icon.png", desc:"BIOS para PCSX2", link:"#"},
-{nombre:"Switch Keys", img:"https://upload.wikimedia.org/wikipedia/commons/7/7d/Yuzu_Logo.png", desc:"Keys para Yuzu", link:"#"}
-];
+querySnapshot.forEach((docSnap)=>{
+const j = docSnap.data();
+const id = docSnap.id;
 
-// cargar
-function cargar(){
-store.innerHTML="";
-juegos.forEach((j,i)=>{
-store.innerHTML+=`
+store.innerHTML += `
 <div class="card">
 <img src="${j.img}">
 <div class="content">
 <h3>${j.nombre}</h3>
 <p>${j.desc}</p>
 
-<div class="btns">
-<a href="${j.link1}" class="btn blue">Descargar</a>
-<a href="${j.link2}" class="btn green">Descargar</a>
-</div>
+<a href="${j.link1}">Descargar 1</a><br>
+<a href="${j.link2}">Descargar 2</a>
 
 ${admin?`
 <div class="admin-actions">
-<button onclick="editar(${i})">✏️</button>
-<button onclick="eliminar(${i})">🗑️</button>
+<button onclick="editar('${id}','${j.nombre}','${j.img}','${j.desc}','${j.link1}','${j.link2}')">Editar</button>
+<button onclick="eliminar('${id}')">Eliminar</button>
 </div>`:""}
+
 </div>
 </div>`;
 });
+};
+
+window.agregarJuego = async function(){
+
+let nuevo = {
+nombre:nombre.value,
+img:img.value,
+desc:desc.value,
+link1:link1.value,
+link2:link2.value
+};
+
+if(editIndex == null){
+await addDoc(collection(db, "juegos"), nuevo);
+}else{
+await updateDoc(doc(db,"juegos",editIndex), nuevo);
+editIndex = null;
 }
+
 cargar();
+};
 
-function cargarEmuladores(){
-emuladores.innerHTML="";
-listaEmuladores.forEach(e=>{
-emuladores.innerHTML+=`
-<div class="card">
-<img src="${e.img}">
-<div class="content">
-<h3>${e.nombre}</h3>
-<p>${e.desc}</p>
-<div class="btns">
-<a href="${e.link}" class="btn blue">Descargar</a>
-</div>
-</div>
-</div>`;
-});
-}
-cargarEmuladores();
+window.editar = function(id,n,i,d,l1,l2){
+nombre.value=n;
+img.value=i;
+desc.value=d;
+link1.value=l1;
+link2.value=l2;
+editIndex=id;
+};
 
-function cargarBios(){
-bios.innerHTML="";
-listaBios.forEach(b=>{
-bios.innerHTML+=`
-<div class="card">
-<img src="${b.img}">
-<div class="content">
-<h3>${b.nombre}</h3>
-<p>${b.desc}</p>
-<div class="btns">
-<a href="${b.link}" class="btn blue">Descargar</a>
-</div>
-</div>
-</div>`;
-});
-}
-cargarBios();
-
-// CRUD
-function agregarJuego(){
-let nuevo={nombre:nombre.value,img:img.value,desc:desc.value,link1:link1.value,link2:link2.value};
-if(editIndex==null) juegos.push(nuevo);
-else juegos[editIndex]=nuevo, editIndex=null;
+window.eliminar = async function(id){
+await deleteDoc(doc(db,"juegos",id));
 cargar();
-}
+};
 
-function editar(i){
-let j=juegos[i];
-nombre.value=j.nombre;
-img.value=j.img;
-desc.value=j.desc;
-link1.value=j.link1;
-link2.value=j.link2;
-editIndex=i;
-}
-
-function eliminar(i){
-juegos.splice(i,1);
+/* iniciar */
+window.onload = ()=>{
 cargar();
-}
+};
 
-// buscador
-search.addEventListener("keyup", e=>{
-let val=e.target.value.toLowerCase();
-document.querySelectorAll(".card").forEach(c=>{
-c.style.display=c.innerText.toLowerCase().includes(val)?"block":"none";
-});
-});
 </script>
 
 </body>
