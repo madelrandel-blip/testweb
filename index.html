@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Luma Switch</title>
 
 <style>
@@ -34,7 +33,6 @@ header{
     align-items:center;
 }
 
-/* BOTONES HEADER */
 .header-btn{
     margin-left:auto;
     display:flex;
@@ -79,8 +77,19 @@ header{
     background:rgba(10,15,30,0.8);
     padding:20px;
 }
+#adminPanel input{
+    padding:8px;
+    margin:5px;
+    border-radius:5px;
+    border:none;
+}
 
-/* GRID ORIGINAL */
+/* modo edición */
+#btnGuardar.editando{
+    background:linear-gradient(135deg,#f59e0b,#d97706);
+}
+
+/* GRID */
 .store{
     display:grid;
     grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
@@ -97,13 +106,10 @@ header{
     display:flex;
     flex-direction:column;
 }
-.card:hover{
-    transform:scale(1.05);
-}
+.card:hover{transform:scale(1.05);}
 
 .card img{width:100%;}
 
-/* CONTENIDO */
 .content{
     padding:10px;
     display:flex;
@@ -114,7 +120,6 @@ header{
 .content h3{font-size:14px;margin:5px 0;}
 .content p{font-size:12px;color:#9aa7b1;}
 
-/* BOTONES ANIMADOS */
 .btns{
     display:flex;
     gap:6px;
@@ -123,13 +128,11 @@ header{
     transform:translateY(10px);
     transition:0.3s;
 }
-
 .card:hover .btns{
     opacity:1;
     transform:translateY(0);
 }
 
-/* BOTONES */
 .btn{
     flex:1;
     padding:7px;
@@ -138,14 +141,10 @@ header{
     color:white;
     border:none;
     cursor:pointer;
-    transition:0.2s;
 }
-.btn:hover{transform:scale(1.05);}
-
 .blue{background:var(--accent);}
 .green{background:var(--green);}
 
-/* ADMIN */
 .admin-actions{
     display:flex;
     gap:5px;
@@ -158,16 +157,15 @@ header{
 
 <header>
 <h1>🌌 Luma Switch</h1>
-
 <div class="header-btn">
 <button onclick="abrirLogin()">🔐 Admin</button>
 <button onclick="logout()" id="logoutBtn" style="display:none;">🚪 Salir</button>
 </div>
 </header>
 
-<!-- LOGIN -->
 <div id="loginBox">
 <div class="login-content">
+<h3>Panel Admin</h3>
 <input id="user" placeholder="Email">
 <input id="pass" type="password" placeholder="Contraseña">
 <button onclick="login()">Entrar</button>
@@ -175,14 +173,13 @@ header{
 </div>
 </div>
 
-<!-- PANEL -->
 <div id="adminPanel">
 <input id="nombre" placeholder="Nombre">
 <input id="img" placeholder="Imagen URL">
 <input id="desc" placeholder="Descripción">
 <input id="link1" placeholder="Link 1">
 <input id="link2" placeholder="Link 2">
-<button onclick="guardarJuego()">Guardar</button>
+<button id="btnGuardar" onclick="agregarJuego()">Guardar</button>
 </div>
 
 <div class="store" id="store"></div>
@@ -192,25 +189,33 @@ function abrirLogin(){loginBox.style.display="flex";}
 function cerrarLogin(){loginBox.style.display="none";}
 
 let admin=false;
-let editId=null;
+let editIndex=null;
+let guardando=false;
+let cargando=false;
 </script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCnqFKUPqbcTt0As9atnSQML00ReFgcgbw",
   authDomain: "luma-switch.firebaseapp.com",
-  projectId: "luma-switch"
+  projectId: "luma-switch",
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-/* LOGIN */
+onAuthStateChanged(auth, (user) => {
+  admin = !!user;
+  adminPanel.style.display = admin ? "block" : "none";
+  logoutBtn.style.display = admin ? "inline-block" : "none";
+  cargar();
+});
+
 window.login = async ()=>{
 await signInWithEmailAndPassword(auth,user.value,pass.value);
 cerrarLogin();
@@ -220,19 +225,16 @@ window.logout = async ()=>{
 await signOut(auth);
 };
 
-onAuthStateChanged(auth,(user)=>{
-admin=!!user;
-adminPanel.style.display=admin?"block":"none";
-logoutBtn.style.display=admin?"inline-block":"none";
-cargar();
-});
+window.cargar = async ()=>{
 
-/* CARGAR */
-window.cargar=async()=>{
-const snap=await getDocs(collection(db,"juegos"));
+if(cargando) return;
+cargando = true;
+
+const snapshot=await getDocs(collection(db,"juegos"));
+
 let html="";
 
-snap.forEach(docSnap=>{
+snapshot.forEach(docSnap=>{
 const j=docSnap.data();
 const id=docSnap.id;
 
@@ -244,14 +246,22 @@ html+=`
 <p>${j.desc}</p>
 
 <div class="btns">
-<a href="${j.link1}" class="btn blue">Obtener</a>
-<a href="${j.link2}" class="btn green">Obtener</a>
+<button class="btn blue">Ver enlace</button>
+<button class="btn green">Ver enlace</button>
 </div>
 
 ${admin?`
 <div class="admin-actions">
-<button onclick="editarJuego('${id}','${j.nombre}','${j.img}','${j.desc}','${j.link1}','${j.link2}')">✏️</button>
-<button onclick="eliminarJuego('${id}')">🗑️</button>
+<button onclick='editar(${JSON.stringify({
+  id: id,
+  nombre: j.nombre,
+  img: j.img,
+  desc: j.desc,
+  link1: j.link1,
+  link2: j.link2
+})})'>✏️</button>
+
+<button onclick="eliminar('${id}')">🗑️</button>
 </div>`:""}
 
 </div>
@@ -259,11 +269,16 @@ ${admin?`
 });
 
 store.innerHTML=html;
+cargando=false;
 };
 
-/* CRUD */
-window.guardarJuego=async()=>{
-let data={
+window.agregarJuego = async function(){
+
+if(guardando) return;
+guardando=true;
+btnGuardar.disabled=true;
+
+let nuevo={
 nombre:nombre.value,
 img:img.value,
 desc:desc.value,
@@ -271,26 +286,53 @@ link1:link1.value,
 link2:link2.value
 };
 
-if(editId==null){
-await addDoc(collection(db,"juegos"),data);
-}else{
-await updateDoc(doc(db,"juegos",editId),data);
-editId=null;
+try{
+
+const q=query(collection(db,"juegos"), where("nombre","==",nombre.value));
+const snap=await getDocs(q);
+
+if(!snap.empty && editIndex==null){
+alert("Este juego ya existe");
+guardando=false;
+btnGuardar.disabled=false;
+return;
 }
 
+if(editIndex==null){
+await addDoc(collection(db,"juegos"),nuevo);
+}else{
+await updateDoc(doc(db,"juegos",editIndex),nuevo);
+editIndex=null;
+}
+
+}catch(e){console.error(e);}
+
+/* reset visual */
+btnGuardar.innerText="Guardar";
+btnGuardar.classList.remove("editando");
+
+guardando=false;
+btnGuardar.disabled=false;
 cargar();
 };
 
-window.editarJuego=(id,n,i,d,l1,l2)=>{
-nombre.value=n;
-img.value=i;
-desc.value=d;
-link1.value=l1;
-link2.value=l2;
-editId=id;
+/* 🔥 NUEVO EDITAR SEGURO */
+window.editar=(j)=>{
+nombre.value = j.nombre;
+img.value = j.img;
+desc.value = j.desc;
+link1.value = j.link1;
+link2.value = j.link2;
+
+editIndex = j.id;
+
+btnGuardar.innerText="Actualizar juego";
+btnGuardar.classList.add("editando");
+
+adminPanel.scrollIntoView({behavior:"smooth"});
 };
 
-window.eliminarJuego=async(id)=>{
+window.eliminar=async(id)=>{
 await deleteDoc(doc(db,"juegos",id));
 cargar();
 };
