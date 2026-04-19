@@ -15,27 +15,16 @@
     --green:#22c55e;
 }
 
-/* fondo */
 body{
     margin:0;
     font-family:Arial;
     color:var(--text);
-    background:
-    radial-gradient(2px 2px at 20% 30%, white, transparent),
-    radial-gradient(2px 2px at 70% 60%, white, transparent),
-    radial-gradient(1px 1px at 40% 80%, white, transparent),
-    radial-gradient(circle at 20% 30%, #1e3a8a, transparent),
-    radial-gradient(circle at 80% 70%, #581c87, transparent),
-    var(--bg);
-    background-size:200px 200px;
-    animation:starsMove 60s linear infinite;
-}
-@keyframes starsMove{
-    from{background-position:0 0;}
-    to{background-position:1000px 1000px;}
+    background: radial-gradient(circle at 20% 30%, #1e3a8a, transparent),
+                radial-gradient(circle at 80% 70%, #581c87, transparent),
+                var(--bg);
 }
 
-/* header */
+/* HEADER */
 header{
     background:rgba(10,15,30,0.7);
     backdrop-filter: blur(10px);
@@ -57,9 +46,14 @@ header{
     cursor:pointer;
     background:linear-gradient(135deg,var(--accent),var(--accent2));
     color:white;
+    transition:0.25s;
+}
+.header-btn button:hover{
+    transform:scale(1.08);
+    box-shadow:0 0 10px var(--accent);
 }
 
-/* login */
+/* LOGIN MODERNO */
 #loginBox{
     display:none;
     position:fixed;
@@ -74,45 +68,53 @@ header{
     padding:25px;
     border-radius:15px;
     text-align:center;
+    width:280px;
+    box-shadow:0 0 20px rgba(0,0,0,0.6);
 }
 
-/* 🔥 PANEL ADMIN MODERNO */
-#adminPanel{
-    display:none;
-    background:rgba(10,15,30,0.85);
-    padding:20px;
-    border-radius:12px;
-    margin:20px;
-    box-shadow:0 0 20px rgba(0,0,0,0.4);
-}
-
-#adminPanel input{
-    width:100%;
+.login-content input{
+    width:90%;
     padding:10px;
-    margin:6px 0;
+    margin:8px 0;
     border:none;
     border-radius:8px;
-    background:#020617;
-    color:white;
 }
 
-#btnGuardar{
-    width:100%;
+.login-content button{
+    padding:10px 14px;
     margin-top:10px;
-    padding:12px;
     border:none;
     border-radius:10px;
-    font-weight:bold;
     cursor:pointer;
     color:white;
-    background:linear-gradient(135deg,#22c55e,#16a34a);
+    font-weight:bold;
+    transition:0.25s;
 }
 
-#btnGuardar.editando{
-    background:linear-gradient(135deg,#f59e0b,#d97706);
+.btn-login{
+    background:linear-gradient(135deg,#38bdf8,#6366f1);
+}
+.btn-login:hover{transform:scale(1.05);}
+
+.btn-close{
+    background:rgba(255,255,255,0.1);
+}
+.btn-close:hover{background:rgba(255,255,255,0.2);}
+
+/* PANEL */
+#adminPanel{
+    display:none;
+    background:rgba(10,15,30,0.8);
+    padding:20px;
+}
+#adminPanel input{
+    padding:8px;
+    margin:5px;
+    border-radius:5px;
+    border:none;
 }
 
-/* grid */
+/* GRID (TAMAÑO ORIGINAL) */
 .store{
     display:grid;
     grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
@@ -120,7 +122,7 @@ header{
     padding:20px;
 }
 
-/* card */
+/* CARD */
 .card{
     background:rgba(15,23,42,0.8);
     border-radius:10px;
@@ -130,8 +132,10 @@ header{
     flex-direction:column;
 }
 .card:hover{transform:scale(1.05);}
+
 .card img{width:100%;}
 
+/* CONTENT */
 .content{
     padding:10px;
     display:flex;
@@ -139,7 +143,10 @@ header{
     flex:1;
 }
 
-/* botones */
+.content h3{font-size:14px;margin:5px 0;}
+.content p{font-size:12px;color:#9aa7b1;}
+
+/* BOTONES ANIMADOS */
 .btns{
     display:flex;
     gap:6px;
@@ -153,14 +160,19 @@ header{
     transform:translateY(0);
 }
 
+/* BOTONES */
 .btn{
     flex:1;
     padding:7px;
+    font-size:12px;
     border-radius:5px;
     color:white;
     border:none;
     cursor:pointer;
+    transition:0.2s;
 }
+.btn:hover{transform:scale(1.05);}
+
 .blue{background:var(--accent);}
 .green{background:var(--green);}
 
@@ -185,10 +197,11 @@ header{
 <!-- LOGIN -->
 <div id="loginBox">
 <div class="login-content">
+<h3>Panel Admin</h3>
 <input id="user" placeholder="Email">
 <input id="pass" type="password" placeholder="Contraseña">
-<button onclick="login()">Entrar</button>
-<button onclick="cerrarLogin()">Cerrar</button>
+<button class="btn-login" onclick="login()">Entrar</button>
+<button class="btn-close" onclick="cerrarLogin()">Cerrar</button>
 </div>
 </div>
 
@@ -199,7 +212,7 @@ header{
 <input id="desc" placeholder="Descripción">
 <input id="link1" placeholder="Link 1">
 <input id="link2" placeholder="Link 2">
-<button id="btnGuardar" onclick="agregarJuego()">💾 Guardar</button>
+<button id="btnGuardar" onclick="agregarJuego()">Guardar</button>
 </div>
 
 <div class="store" id="store"></div>
@@ -211,11 +224,12 @@ function cerrarLogin(){loginBox.style.display="none";}
 let admin=false;
 let editIndex=null;
 let guardando=false;
+let cargando=false;
 </script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, deleteDoc, doc, updateDoc, query, where, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
@@ -228,9 +242,31 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-/* tiempo real */
-onSnapshot(collection(db,"juegos"), (snapshot)=>{
+onAuthStateChanged(auth, (user) => {
+  admin = !!user;
+  adminPanel.style.display = admin ? "block" : "none";
+  logoutBtn.style.display = admin ? "inline-block" : "none";
+  cargar();
+});
+
+window.login = async ()=>{
+await signInWithEmailAndPassword(auth,user.value,pass.value);
+cerrarLogin();
+};
+
+window.logout = async ()=>{
+await signOut(auth);
+};
+
+window.cargar = async ()=>{
+
+if(cargando) return;
+cargando = true;
+
+const snapshot=await getDocs(collection(db,"juegos"));
+
 let html="";
+
 snapshot.forEach(docSnap=>{
 const j=docSnap.data();
 const id=docSnap.id;
@@ -243,8 +279,8 @@ html+=`
 <p>${j.desc}</p>
 
 <div class="btns">
-<button class="btn blue">Ver</button>
-<button class="btn green">Ver</button>
+<button class="btn blue">Ver enlace</button>
+<button class="btn green">Ver enlace</button>
 </div>
 
 ${admin?`
@@ -256,20 +292,13 @@ ${admin?`
 </div>
 </div>`;
 });
+
 store.innerHTML=html;
-});
+cargando=false;
+};
 
-onAuthStateChanged(auth,(user)=>{
-admin=!!user;
-adminPanel.style.display=admin?"block":"none";
-logoutBtn.style.display=admin?"inline-block":"none";
-});
+window.agregarJuego = async function(){
 
-window.login=async()=>{await signInWithEmailAndPassword(auth,user.value,pass.value);cerrarLogin();}
-window.logout=async()=>{await signOut(auth);}
-
-/* guardar */
-window.agregarJuego=async()=>{
 if(guardando) return;
 guardando=true;
 btnGuardar.disabled=true;
@@ -281,6 +310,8 @@ desc:desc.value,
 link1:link1.value,
 link2:link2.value
 };
+
+try{
 
 const q=query(collection(db,"juegos"), where("nombre","==",nombre.value));
 const snap=await getDocs(q);
@@ -299,15 +330,13 @@ await updateDoc(doc(db,"juegos",editIndex),nuevo);
 editIndex=null;
 }
 
-/* reset UI */
-btnGuardar.innerText="💾 Guardar";
-btnGuardar.classList.remove("editando");
+}catch(e){console.error(e);}
 
 guardando=false;
 btnGuardar.disabled=false;
+cargar();
 };
 
-/* editar */
 window.editar=(id,n,i,d,l1,l2)=>{
 nombre.value=n;
 img.value=i;
@@ -315,15 +344,11 @@ desc.value=d;
 link1.value=l1;
 link2.value=l2;
 editIndex=id;
-
-btnGuardar.innerText="✏️ Actualizar juego";
-btnGuardar.classList.add("editando");
-
-adminPanel.scrollIntoView({behavior:"smooth"});
 };
 
 window.eliminar=async(id)=>{
 await deleteDoc(doc(db,"juegos",id));
+cargar();
 };
 </script>
 
