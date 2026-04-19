@@ -195,25 +195,6 @@ s.style.left=Math.random()*100+"%";
 stars.appendChild(s);
 }
 
-// login simple
-let admin=false, editIndex=null;
-
-function abrirLogin(){loginBox.style.display="flex";}
-function login(){
-if(user.value==="Mad" && pass.value==="Papel#19"){
-admin=true;
-adminPanel.style.display="block";
-logoutBtn.style.display="inline-block";
-loginBox.style.display="none";
-cargar();
-}
-}
-function logout(){
-admin=false;
-adminPanel.style.display="none";
-logoutBtn.style.display="none";
-cargar();
-}
 </script>
 
 <!-- FIREBASE -->
