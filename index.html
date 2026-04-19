@@ -24,12 +24,10 @@ body{
                 var(--bg);
 }
 
-/* estrellas */
 .stars{position:fixed;width:100%;height:100%;z-index:-1;}
 .star{position:absolute;width:2px;height:2px;background:white;animation: twinkle 2s infinite alternate;}
 @keyframes twinkle{from{opacity:0.2;}to{opacity:1;}}
 
-/* header */
 header{
     background:rgba(10,15,30,0.7);
     backdrop-filter: blur(10px);
@@ -54,14 +52,9 @@ header{
     color:white;
     transition:0.25s;
 }
-.header-btn button:hover{
-    transform:scale(1.05);
-}
+.header-btn button:hover{transform:scale(1.05);}
 
-/* animación */
-.fade{
-    animation:fadeIn 0.35s ease;
-}
+.fade{animation:fadeIn 0.35s ease;}
 @keyframes fadeIn{
     from{opacity:0; transform:translateY(10px);}
     to{opacity:1; transform:translateY(0);}
@@ -94,7 +87,6 @@ header{
     border-radius:8px;
 }
 
-/* BOTONES MODERNOS */
 .login-content button{
     padding:10px 14px;
     margin-top:10px;
@@ -150,7 +142,6 @@ header{
 .card:hover{transform:scale(1.05);}
 .card img{width:100%;}
 
-/* contenido */
 .content{
     padding:10px;
     display:flex;
@@ -160,7 +151,6 @@ header{
 .content h3{font-size:14px;margin:5px 0;}
 .content p{font-size:12px;color:#9aa7b1;}
 
-/* botones animados */
 .btns{
     display:flex;
     gap:6px;
@@ -218,6 +208,17 @@ header{
 </div>
 </div>
 
+<!-- MODAL SEGURO -->
+<div id="safeModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); justify-content:center; align-items:center; z-index:999;">
+  <div style="background:#0f172a; padding:20px; border-radius:12px; width:300px; text-align:center;">
+    <h3>⚠️ Enlace externo</h3>
+    <p>Este contenido está fuera del sitio</p>
+    <a id="safeLink" href="#" target="_blank" class="btn blue">Abrir enlace</a>
+    <br><br>
+    <button onclick="cerrarSafe()" class="btn green">Cerrar</button>
+  </div>
+</div>
+
 <!-- PANEL -->
 <div id="adminPanel">
 <input id="nombre" placeholder="Nombre">
@@ -240,9 +241,17 @@ s.style.left=Math.random()*100+"%";
 stars.appendChild(s);
 }
 
-// abrir/cerrar login
 function abrirLogin(){loginBox.style.display="flex";}
 function cerrarLogin(){loginBox.style.display="none";}
+
+// modal seguro
+function abrirSafe(url){
+  safeModal.style.display="flex";
+  safeLink.href=url;
+}
+function cerrarSafe(){
+  safeModal.style.display="none";
+}
 
 let admin=false, editIndex=null;
 </script>
@@ -253,7 +262,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-/* CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyCnqFKUPqbcTt0As9atnSQML00ReFgcgbw",
   authDomain: "luma-switch.firebaseapp.com",
@@ -264,7 +272,6 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-/* estado login */
 onAuthStateChanged(auth, (user) => {
   if(user){
     admin = true;
@@ -278,7 +285,6 @@ onAuthStateChanged(auth, (user) => {
   cargar();
 });
 
-/* login real */
 window.login = async function(){
 try{
 await signInWithEmailAndPassword(auth, user.value, pass.value);
@@ -288,12 +294,9 @@ alert("Error: " + e.message);
 }
 };
 
-/* logout */
 window.logout = async function(){
 await signOut(auth);
 };
-
-/* CRUD */
 
 window.cargar = async function(){
 store.innerHTML = "";
@@ -311,8 +314,8 @@ store.innerHTML += `
 <p>${j.desc}</p>
 
 <div class="btns">
-<a href="${j.link1}" class="btn blue">Descargar</a>
-<a href="${j.link2}" class="btn green">Descargar</a>
+<button onclick="abrirSafe('${j.link1}')" class="btn blue">Ver enlace</button>
+<button onclick="abrirSafe('${j.link2}')" class="btn green">Ver enlace</button>
 </div>
 
 ${admin?`
