@@ -53,7 +53,7 @@ header{
     box-shadow:0 0 10px var(--accent);
 }
 
-/* LOGIN */
+/* LOGIN MODERNO */
 #loginBox{
     display:none;
     position:fixed;
@@ -61,14 +61,65 @@ header{
     background:rgba(0,0,0,0.85);
     justify-content:center;
     align-items:center;
+    backdrop-filter: blur(6px);
 }
 
 .login-content{
-    background:#0f172a;
+    background:linear-gradient(145deg,#0f172a,#020617);
     padding:25px;
-    border-radius:15px;
+    border-radius:16px;
     text-align:center;
     width:280px;
+    box-shadow:0 0 25px rgba(0,0,0,0.8);
+    animation:fadeIn 0.3s ease;
+}
+
+.login-content input{
+    width:90%;
+    padding:10px;
+    margin:8px 0;
+    border:none;
+    border-radius:10px;
+    background:#020617;
+    color:white;
+    outline:none;
+}
+
+.login-content input:focus{
+    box-shadow:0 0 8px var(--accent);
+}
+
+.btn-login{
+    background:linear-gradient(135deg,#38bdf8,#6366f1);
+    border:none;
+    padding:10px;
+    border-radius:12px;
+    color:white;
+    cursor:pointer;
+    width:100%;
+    margin-top:8px;
+    transition:0.25s;
+}
+
+.btn-login:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 12px var(--accent);
+}
+
+.btn-close{
+    background:rgba(255,255,255,0.08);
+    border:none;
+    padding:10px;
+    border-radius:12px;
+    color:white;
+    cursor:pointer;
+    width:100%;
+    margin-top:6px;
+    transition:0.25s;
+}
+
+.btn-close:hover{
+    background:rgba(255,255,255,0.15);
 }
 
 /* PANEL */
@@ -82,11 +133,6 @@ header{
     margin:5px;
     border-radius:5px;
     border:none;
-}
-
-/* 🔥 MODO EDICIÓN VISUAL */
-#btnGuardar.editando{
-    background:linear-gradient(135deg,#f59e0b,#d97706);
 }
 
 /* GRID */
@@ -107,9 +153,9 @@ header{
     flex-direction:column;
 }
 .card:hover{transform:scale(1.05);}
-
 .card img{width:100%;}
 
+/* CONTENT */
 .content{
     padding:10px;
     display:flex;
@@ -120,6 +166,7 @@ header{
 .content h3{font-size:14px;margin:5px 0;}
 .content p{font-size:12px;color:#9aa7b1;}
 
+/* BOTONES */
 .btns{
     display:flex;
     gap:6px;
@@ -142,6 +189,8 @@ header{
     border:none;
     cursor:pointer;
 }
+.btn:hover{transform:scale(1.05);}
+
 .blue{background:var(--accent);}
 .green{background:var(--green);}
 
@@ -163,16 +212,18 @@ header{
 </div>
 </header>
 
+<!-- LOGIN -->
 <div id="loginBox">
 <div class="login-content">
 <h3>Panel Admin</h3>
 <input id="user" placeholder="Email">
 <input id="pass" type="password" placeholder="Contraseña">
-<button onclick="login()">Entrar</button>
-<button onclick="cerrarLogin()">Cerrar</button>
+<button class="btn-login" onclick="login()">Entrar</button>
+<button class="btn-close" onclick="cerrarLogin()">Cerrar</button>
 </div>
 </div>
 
+<!-- PANEL -->
 <div id="adminPanel">
 <input id="nombre" placeholder="Nombre">
 <input id="img" placeholder="Imagen URL">
@@ -201,7 +252,7 @@ import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from
 
 const firebaseConfig = {
   apiKey: "AIzaSyCnqFKUPqbcTt0As9atnSQML00ReFgcgbw",
-  authDomain: "luma-switch.firebaseapp.com",
+  authDomain: "Tluma-switch.firebaseapp.com",
   projectId: "luma-switch",
 };
 
@@ -226,12 +277,10 @@ await signOut(auth);
 };
 
 window.cargar = async ()=>{
-
 if(cargando) return;
 cargando = true;
 
 const snapshot=await getDocs(collection(db,"juegos"));
-
 let html="";
 
 snapshot.forEach(docSnap=>{
@@ -246,13 +295,20 @@ html+=`
 <p>${j.desc}</p>
 
 <div class="btns">
-<button class="btn blue">Ver enlace</button>
-<button class="btn green">Ver enlace</button>
+<a href="${j.link1}" class="btn blue">Descargar</a>
+<a href="${j.link2}" class="btn green">Descargar</a>
 </div>
 
 ${admin?`
 <div class="admin-actions">
-<button onclick="editar('${id}','${j.nombre}','${j.img}','${j.desc}','${j.link1}','${j.link2}')">✏️</button>
+<button onclick='editarJuego(${JSON.stringify({
+  id:id,
+  nombre:j.nombre,
+  img:j.img,
+  desc:j.desc,
+  link1:j.link1,
+  link2:j.link2
+})})'>✏️</button>
 <button onclick="eliminar('${id}')">🗑️</button>
 </div>`:""}
 
@@ -265,7 +321,6 @@ cargando=false;
 };
 
 window.agregarJuego = async function(){
-
 if(guardando) return;
 guardando=true;
 btnGuardar.disabled=true;
@@ -279,7 +334,6 @@ link2:link2.value
 };
 
 try{
-
 const q=query(collection(db,"juegos"), where("nombre","==",nombre.value));
 const snap=await getDocs(q);
 
@@ -299,29 +353,18 @@ editIndex=null;
 
 }catch(e){console.error(e);}
 
-/* 🔥 RESET VISUAL */
-btnGuardar.innerText="Guardar";
-btnGuardar.classList.remove("editando");
-
 guardando=false;
 btnGuardar.disabled=false;
 cargar();
 };
 
-window.editar=(id,n,i,d,l1,l2)=>{
-nombre.value=n;
-img.value=i;
-desc.value=d;
-link1.value=l1;
-link2.value=l2;
-editIndex=id;
-
-/* 🔥 ACTIVAR MODO EDICIÓN */
-btnGuardar.innerText="Actualizar juego";
-btnGuardar.classList.add("editando");
-
-/* 🔥 SCROLL */
-adminPanel.scrollIntoView({behavior:"smooth"});
+window.editarJuego = (j)=>{
+nombre.value=j.nombre;
+img.value=j.img;
+desc.value=j.desc;
+link1.value=j.link1;
+link2.value=j.link2;
+editIndex=j.id;
 };
 
 window.eliminar=async(id)=>{
