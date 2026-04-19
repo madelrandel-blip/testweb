@@ -1,3 +1,10 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luma Switch</title>
+
 <style>
 :root{
     --bg:#05070d;
@@ -69,7 +76,7 @@ header{
     box-shadow:0 0 10px var(--accent);
 }
 
-/* LOGIN */
+/* LOGIN MODERNO */
 #loginBox{
     display:none;
     position:fixed;
@@ -108,6 +115,12 @@ header{
     background:#020617;
     color:white;
     border:1px solid rgba(255,255,255,0.08);
+    transition:0.25s;
+}
+
+.login-content input:focus{
+    border:1px solid var(--accent);
+    box-shadow:0 0 10px var(--accent);
 }
 
 .login-content button{
@@ -119,6 +132,17 @@ header{
     cursor:pointer;
     background:linear-gradient(135deg,var(--accent),var(--accent2));
     color:white;
+    transition:0.25s;
+}
+
+.login-content button:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 12px var(--accent);
+}
+
+@keyframes fadeIn{
+    from{opacity:0; transform:translateY(10px);}
+    to{opacity:1; transform:translateY(0);}
 }
 
 /* PANEL */
@@ -129,12 +153,16 @@ header{
     position:relative;
     z-index:1;
 }
-
 #adminPanel input{
     padding:8px;
     margin:5px;
     border-radius:5px;
     border:none;
+}
+
+/* modo edición */
+#btnGuardar.editando{
+    background:linear-gradient(135deg,#f59e0b,#d97706);
 }
 
 /* GRID */
@@ -156,19 +184,10 @@ header{
     display:flex;
     flex-direction:column;
 }
+.card:hover{transform:scale(1.05);}
 
-.card:hover{
-    transform:scale(1.05);
-}
+.card img{width:100%;}
 
-/* IMAGEN UNIFORME */
-.card img{
-    width:100%;
-    height:120px;
-    object-fit:cover;
-}
-
-/* CONTENIDO */
 .content{
     padding:10px;
     display:flex;
@@ -176,24 +195,9 @@ header{
     flex:1;
 }
 
-/* FIX TEXTO */
-.content h3{
-    font-size:14px;
-    margin:5px 0;
-    line-height:1.2;
-    height:34px;
-    overflow:hidden;
-}
+.content h3{font-size:14px;margin:5px 0;}
+.content p{font-size:12px;color:#9aa7b1;}
 
-.content p{
-    font-size:12px;
-    color:#9aa7b1;
-    line-height:1.2;
-    height:30px;
-    overflow:hidden;
-}
-
-/* BOTONES */
 .btns{
     display:flex;
     gap:6px;
@@ -202,7 +206,6 @@ header{
     transform:translateY(10px);
     transition:0.3s;
 }
-
 .card:hover .btns{
     opacity:1;
     transform:translateY(0);
@@ -217,7 +220,6 @@ header{
     border:none;
     cursor:pointer;
 }
-
 .blue{background:var(--accent);}
 .green{background:var(--green);}
 
@@ -227,3 +229,256 @@ header{
     margin-top:5px;
 }
 </style>
+</head>
+
+<body>
+
+<canvas id="stars"></canvas>
+
+<header>
+<h1>🌌 Luma Switch</h1>
+<input type="text" id="buscador" placeholder="Buscar...">
+<div class="header-btn">
+<button onclick="abrirLogin()">🔐 Admin</button>
+<button onclick="logout()" id="logoutBtn" style="display:none;">🚪 Salir</button>
+</div>
+</header>
+
+<div id="loginBox">
+<div class="login-content">
+<h3>Panel Admin</h3>
+<input id="user" placeholder="Email">
+<input id="pass" type="password" placeholder="Contraseña">
+<button onclick="login()">Entrar</button>
+<button onclick="cerrarLogin()">Cerrar</button>
+</div>
+</div>
+
+<div id="adminPanel">
+<input id="nombre" placeholder="Nombre">
+<input id="img" placeholder="Imagen URL">
+<input id="desc" placeholder="Descripción">
+<input id="link1" placeholder="Link 1">
+<input id="link2" placeholder="Link 2">
+<button id="btnGuardar" onclick="agregarJuego()">Guardar</button>
+</div>
+
+<div class="store" id="store"></div>
+
+<script>
+function abrirLogin(){loginBox.style.display="flex";}
+function cerrarLogin(){loginBox.style.display="none";}
+
+let admin=false;
+let editIndex=null;
+let guardando=false;
+let cargando=false;
+
+/* 🔎 NUEVO: almacenamiento para búsqueda */
+let juegosData = [];
+
+/* 🔎 FILTRO EN TIEMPO REAL */
+buscador.addEventListener("input", ()=>{
+    const texto = buscador.value.toLowerCase();
+    render(juegosData.filter(j =>
+        j.nombre.toLowerCase().includes(texto) ||
+        j.desc.toLowerCase().includes(texto)
+    ));
+});
+
+/* 🔎 render reutilizable */
+function render(lista){
+    let html="";
+    lista.forEach(j=>{
+        html+=`
+        <div class="card">
+        <img src="${j.img}">
+        <div class="content">
+        <h3>${j.nombre}</h3>
+        <p>${j.desc}</p>
+
+        <div class="btns">
+        <button class="btn blue">Ver enlace</button>
+        <button class="btn green">Ver enlace</button>
+        </div>
+
+        ${admin?`
+        <div class="admin-actions">
+        <button onclick="eliminar('${j.id}')">🗑️</button>
+        </div>`:""}
+
+        </div>
+        </div>`;
+    });
+    store.innerHTML = html;
+}
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCnqFKUPqbcTt0As9atnSQML00ReFgcgbw",
+  authDomain: "luma-switch.firebaseapp.com",
+  projectId: "luma-switch",
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+onAuthStateChanged(auth, (user) => {
+  admin = !!user;
+  adminPanel.style.display = admin ? "block" : "none";
+  logoutBtn.style.display = admin ? "inline-block" : "none";
+  cargar();
+});
+
+window.login = async ()=>{
+await signInWithEmailAndPassword(auth,user.value,pass.value);
+cerrarLogin();
+};
+
+window.logout = async ()=>{
+await signOut(auth);
+};
+
+window.cargar = async ()=>{
+
+if(cargando) return;
+cargando = true;
+
+const snapshot=await getDocs(collection(db,"juegos"));
+
+juegosData = [];
+
+snapshot.forEach(docSnap=>{
+const j=docSnap.data();
+j.id = docSnap.id;
+juegosData.push(j);
+});
+
+/* 🔎 usa render */
+render(juegosData);
+
+cargando=false;
+};
+
+window.agregarJuego = async function(){
+
+if(guardando) return;
+guardando=true;
+btnGuardar.disabled=true;
+
+let nuevo={
+nombre:nombre.value,
+img:img.value,
+desc:desc.value,
+link1:link1.value,
+link2:link2.value
+};
+
+try{
+
+const q=query(collection(db,"juegos"), where("nombre","==",nombre.value));
+const snap=await getDocs(q);
+
+if(!snap.empty && editIndex==null){
+alert("Este juego ya existe");
+guardando=false;
+btnGuardar.disabled=false;
+return;
+}
+
+if(editIndex==null){
+await addDoc(collection(db,"juegos"),nuevo);
+}else{
+await updateDoc(doc(db,"juegos",editIndex),nuevo);
+editIndex=null;
+}
+
+}catch(e){console.error(e);}
+
+btnGuardar.innerText="Guardar";
+btnGuardar.classList.remove("editando");
+
+guardando=false;
+btnGuardar.disabled=false;
+cargar();
+};
+
+window.editar=(j)=>{
+nombre.value = j.nombre;
+img.value = j.img;
+desc.value = j.desc;
+link1.value = j.link1;
+link2.value = j.link2;
+
+editIndex = j.id;
+
+btnGuardar.innerText="Actualizar juego";
+btnGuardar.classList.add("editando");
+
+adminPanel.scrollIntoView({behavior:"smooth"});
+};
+
+window.eliminar=async(id)=>{
+await deleteDoc(doc(db,"juegos",id));
+cargar();
+};
+</script>
+
+<script>
+const canvas = document.getElementById("stars");
+const ctx = canvas.getContext("2d");
+
+let stars = [];
+let numStars = 80;
+
+function resize(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener("resize", resize);
+
+function initStars(){
+    stars = [];
+    for(let i=0;i<numStars;i++){
+        stars.push({
+            x: Math.random()*canvas.width,
+            y: Math.random()*canvas.height,
+            r: Math.random()*1.2,
+            speed: Math.random()*0.3 + 0.05
+        });
+    }
+}
+initStars();
+
+function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    ctx.fillStyle = "white";
+
+    for(let s of stars){
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+        ctx.fill();
+
+        s.y += s.speed;
+
+        if(s.y > canvas.height){
+            s.y = 0;
+            s.x = Math.random()*canvas.width;
+        }
+    }
+
+    requestAnimationFrame(draw);
+}
+draw();
+</script>
+
+</body>
+</html>
