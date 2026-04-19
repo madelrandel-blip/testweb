@@ -24,6 +24,14 @@ body{
                 var(--bg);
 }
 
+/* CANVAS ESTRELLAS */
+#stars{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+}
+
 /* HEADER */
 header{
     background:rgba(10,15,30,0.7);
@@ -31,6 +39,8 @@ header{
     padding:15px;
     display:flex;
     align-items:center;
+    position:relative;
+    z-index:1;
 }
 
 .header-btn{
@@ -53,22 +63,73 @@ header{
     box-shadow:0 0 10px var(--accent);
 }
 
-/* LOGIN */
+/* LOGIN MODERNO */
 #loginBox{
     display:none;
     position:fixed;
     inset:0;
-    background:rgba(0,0,0,0.85);
+    background:rgba(0,0,0,0.6);
+    backdrop-filter: blur(6px);
     justify-content:center;
     align-items:center;
+    z-index:10;
 }
 
 .login-content{
-    background:#0f172a;
-    padding:25px;
-    border-radius:15px;
+    background:rgba(15,23,42,0.75);
+    border:1px solid rgba(125,211,252,0.2);
+    backdrop-filter: blur(14px);
+    padding:30px 25px;
+    border-radius:20px;
+    width:300px;
+    box-shadow:0 0 25px rgba(125,211,252,0.15);
+    animation:fadeIn 0.4s ease;
     text-align:center;
-    width:280px;
+}
+
+.login-content h3{
+    margin-bottom:15px;
+    font-weight:600;
+}
+
+.login-content input{
+    width:100%;
+    padding:10px;
+    margin:8px 0;
+    border-radius:10px;
+    border:none;
+    outline:none;
+    background:#020617;
+    color:white;
+    border:1px solid rgba(255,255,255,0.08);
+    transition:0.25s;
+}
+
+.login-content input:focus{
+    border:1px solid var(--accent);
+    box-shadow:0 0 10px var(--accent);
+}
+
+.login-content button{
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:white;
+    transition:0.25s;
+}
+
+.login-content button:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 12px var(--accent);
+}
+
+@keyframes fadeIn{
+    from{opacity:0; transform:translateY(10px);}
+    to{opacity:1; transform:translateY(0);}
 }
 
 /* PANEL */
@@ -76,6 +137,8 @@ header{
     display:none;
     background:rgba(10,15,30,0.8);
     padding:20px;
+    position:relative;
+    z-index:1;
 }
 #adminPanel input{
     padding:8px;
@@ -95,6 +158,8 @@ header{
     grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
     gap:18px;
     padding:20px;
+    position:relative;
+    z-index:1;
 }
 
 /* CARD */
@@ -154,6 +219,8 @@ header{
 </head>
 
 <body>
+
+<canvas id="stars"></canvas>
 
 <header>
 <h1>🌌 Luma Switch</h1>
@@ -307,7 +374,6 @@ editIndex=null;
 
 }catch(e){console.error(e);}
 
-/* reset visual */
 btnGuardar.innerText="Guardar";
 btnGuardar.classList.remove("editando");
 
@@ -316,7 +382,6 @@ btnGuardar.disabled=false;
 cargar();
 };
 
-/* 🔥 NUEVO EDITAR SEGURO */
 window.editar=(j)=>{
 nombre.value = j.nombre;
 img.value = j.img;
@@ -336,6 +401,57 @@ window.eliminar=async(id)=>{
 await deleteDoc(doc(db,"juegos",id));
 cargar();
 };
+</script>
+
+<!-- ESTRELLAS OPTIMIZADAS -->
+<script>
+const canvas = document.getElementById("stars");
+const ctx = canvas.getContext("2d");
+
+let stars = [];
+let numStars = 80;
+
+function resize(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener("resize", resize);
+
+function initStars(){
+    stars = [];
+    for(let i=0;i<numStars;i++){
+        stars.push({
+            x: Math.random()*canvas.width,
+            y: Math.random()*canvas.height,
+            r: Math.random()*1.2,
+            speed: Math.random()*0.3 + 0.05
+        });
+    }
+}
+initStars();
+
+function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    ctx.fillStyle = "white";
+
+    for(let s of stars){
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+        ctx.fill();
+
+        s.y += s.speed;
+
+        if(s.y > canvas.height){
+            s.y = 0;
+            s.x = Math.random()*canvas.width;
+        }
+    }
+
+    requestAnimationFrame(draw);
+}
+draw();
 </script>
 
 </body>
