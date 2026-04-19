@@ -62,7 +62,6 @@ header{
     transition:0.3s;
 }
 
-/* botón activo */
 .header-btn button.active{
     box-shadow:0 0 10px var(--accent);
     transform:scale(1.05);
@@ -100,6 +99,7 @@ header{
     border-radius:5px;
 }
 
+/* botones login modernos */
 .login-content button{
     padding:10px 16px;
     margin:8px 5px 0;
@@ -108,6 +108,7 @@ header{
     cursor:pointer;
     font-weight:bold;
     color:white;
+    transition:all 0.25s ease;
 }
 .login-content button:first-of-type{
     background:linear-gradient(135deg,#38bdf8,#6366f1);
@@ -117,8 +118,17 @@ header{
 }
 
 /* panel */
-#adminPanel{display:none;background:rgba(10,15,30,0.8);padding:20px;}
-#adminPanel input{padding:8px;margin:5px;border-radius:5px;border:none;}
+#adminPanel{
+    display:none;
+    background:rgba(10,15,30,0.8);
+    padding:20px;
+}
+#adminPanel input{
+    padding:8px;
+    margin:5px;
+    border-radius:5px;
+    border:none;
+}
 
 /* grid */
 .store{
@@ -140,10 +150,17 @@ header{
 .card:hover{transform:scale(1.05);}
 .card img{width:100%;}
 
-.content{padding:10px;display:flex;flex-direction:column;flex:1;}
+/* contenido */
+.content{
+    padding:10px;
+    display:flex;
+    flex-direction:column;
+    flex:1;
+}
 .content h3{font-size:14px;margin:5px 0;}
 .content p{font-size:12px;color:#9aa7b1;}
 
+/* botones hover */
 .btns{
     display:flex;
     gap:6px;
@@ -152,7 +169,10 @@ header{
     transform:translateY(10px);
     transition:0.3s;
 }
-.card:hover .btns{opacity:1;transform:translateY(0);}
+.card:hover .btns{
+    opacity:1;
+    transform:translateY(0);
+}
 
 .btn{
     flex:1;
@@ -166,7 +186,11 @@ header{
 .blue{background:var(--accent);}
 .green{background:var(--green);}
 
-.admin-actions{display:flex;gap:5px;margin-top:5px;}
+.admin-actions{
+    display:flex;
+    gap:5px;
+    margin-top:5px;
+}
 </style>
 </head>
 
@@ -187,7 +211,28 @@ header{
 </div>
 </header>
 
-<!-- contenido -->
+<!-- LOGIN -->
+<div id="loginBox">
+<div class="login-content">
+<h3>Admin</h3>
+<input id="user" placeholder="Usuario">
+<input id="pass" type="password" placeholder="Contraseña">
+<button onclick="login()">Entrar</button>
+<button onclick="cerrarLogin()">Cerrar</button>
+</div>
+</div>
+
+<!-- PANEL -->
+<div id="adminPanel">
+<h2>Panel Admin</h2>
+<input id="nombre" placeholder="Nombre">
+<input id="img" placeholder="Imagen URL">
+<input id="desc" placeholder="Descripción">
+<input id="link1" placeholder="Link 1">
+<input id="link2" placeholder="Link 2">
+<button onclick="agregarJuego()">Guardar</button>
+</div>
+
 <div class="store fade" id="store"></div>
 <div class="store fade" id="emuladores" style="display:none;"></div>
 <div class="store fade" id="bios" style="display:none;"></div>
@@ -202,13 +247,35 @@ s.style.left=Math.random()*100+"%";
 stars.appendChild(s);
 }
 
-// botones activos
+// login
+let admin=false, editIndex=null;
+
+function abrirLogin(){loginBox.style.display="flex";}
+function cerrarLogin(){loginBox.style.display="none";}
+
+function login(){
+if(user.value==="Mad" && pass.value==="Papel#19"){
+admin=true;
+adminPanel.style.display="block";
+logoutBtn.style.display="inline-block";
+cerrarLogin();
+cargar();
+}else alert("Datos incorrectos");
+}
+
+function logout(){
+admin=false;
+adminPanel.style.display="none";
+logoutBtn.style.display="none";
+cargar();
+}
+
+// pestañas + animación
 function activar(btn){
 document.querySelectorAll(".header-btn button").forEach(b=>b.classList.remove("active"));
 btn.classList.add("active");
 }
 
-// pestañas con animación
 function mostrarTienda(){
 store.style.display="grid";
 emuladores.style.display="none";
@@ -233,8 +300,132 @@ bios.classList.add("fade");
 activar(btnBios);
 }
 
-// activar inicio al cargar
-window.onload = () => activar(btnInicio);
+window.onload=()=>activar(btnInicio);
+
+// JUEGOS COMPLETOS
+let juegos = [
+{nombre:"The Legend of Zelda: Breath of the Wild", img:"https://art.gametdb.com/switch/box2/US/AAAAA.png", desc:"Mundo abierto", link1:"#", link2:"#"},
+{nombre:"The Legend of Zelda: Tears of the Kingdom", img:"https://art.gametdb.com/switch/box/US/AXN7A.png", desc:"Aventura", link1:"#", link2:"#"},
+{nombre:"The Legend of Zelda: Skyward Sword", img:"https://art.gametdb.com/switch/box/US/AZ89A.png?1696859490", desc:"Aventura", link1:"https://www.mediafire.com/file/zl5eumnm7kgq5iw/The+Legend+of+Zelda+Skyward+Sword+HD+[v1.0.1].nsp/file", link2:"#"},
+{nombre:"Mario Kart 8 Deluxe", img:"https://art.gametdb.com/switch/box/US/AABPA.png", desc:"Carreras", link1:"#", link2:"#"},
+{nombre:"Super Smash Bros Ultimate", img:"https://art.gametdb.com/switch/box/MX/AAABA.png", desc:"Lucha", link1:"#", link2:"#"},
+{nombre:"Mario Odyssey", img:"https://art.gametdb.com/switch/box/US/AAACA.png", desc:"Aventura", link1:"#", link2:"#"},
+{nombre:"Pokemon Scarlet", img:"https://art.gametdb.com/switch/box/US/ALZXA.png", desc:"Pokemon", link1:"#", link2:"#"},
+{nombre:"Animal Crossing New Horizons", img:"https://art.gametdb.com/switch/box/US/ACBAA.png", desc:"Simulación", link1:"#", link2:"#"},
+{nombre:"Metroid Dread", img:"https://art.gametdb.com/switch/box/US/AYL8A.png", desc:"Acción", link1:"#", link2:"#"},
+{nombre:"Kirby Forgotten Land", img:"https://art.gametdb.com/switch/box/US/ARZGA.png", desc:"Plataformas", link1:"#", link2:"#"},
+{nombre:"Minecraft", img:"https://art.gametdb.com/switch/box/US/AEUCA.png", desc:"Sandbox", link1:"#", link2:"#"},
+{nombre:"Super Mario 3D World + Bowser's Fury", img:"https://art.gametdb.com/switch/box/US/AUZPA.png", desc:"Cooperativo", link1:"#", link2:"#"},
+{nombre:"Tomodachi Life Living the Dream", img:"https://art.gametdb.com/switch/box/CA/BLFGA.png?1775153578", desc:"Simulador", link1:"https://gofile.io/d/yq4GNq", link2:"#"}
+];
+
+// emuladores
+let listaEmuladores = [
+{nombre:"Yuzu Emulator", img:"https://upload.wikimedia.org/wikipedia/commons/7/7d/Yuzu_Logo.png", desc:"Nintendo Switch", link:"#"},
+{nombre:"Dolphin Emulator", img:"https://upload.wikimedia.org/wikipedia/commons/3/3a/Dolphin-logo.png", desc:"GameCube / Wii", link:"#"},
+{nombre:"PCSX2", img:"https://upload.wikimedia.org/wikipedia/commons/6/60/PCSX2_icon.png", desc:"PlayStation 2", link:"#"},
+{nombre:"PPSSPP", img:"https://upload.wikimedia.org/wikipedia/commons/0/06/PPSSPP_logo.svg", desc:"PSP", link:"#"}
+];
+
+// bios
+let listaBios = [
+{nombre:"PS2 BIOS Pack", img:"https://upload.wikimedia.org/wikipedia/commons/6/60/PCSX2_icon.png", desc:"BIOS para PCSX2", link:"#"},
+{nombre:"Switch Keys", img:"https://upload.wikimedia.org/wikipedia/commons/7/7d/Yuzu_Logo.png", desc:"Keys para Yuzu", link:"#"}
+];
+
+// cargar
+function cargar(){
+store.innerHTML="";
+juegos.forEach((j,i)=>{
+store.innerHTML+=`
+<div class="card">
+<img src="${j.img}">
+<div class="content">
+<h3>${j.nombre}</h3>
+<p>${j.desc}</p>
+
+<div class="btns">
+<a href="${j.link1}" class="btn blue">Descargar</a>
+<a href="${j.link2}" class="btn green">Descargar</a>
+</div>
+
+${admin?`
+<div class="admin-actions">
+<button onclick="editar(${i})">✏️</button>
+<button onclick="eliminar(${i})">🗑️</button>
+</div>`:""}
+</div>
+</div>`;
+});
+}
+cargar();
+
+function cargarEmuladores(){
+emuladores.innerHTML="";
+listaEmuladores.forEach(e=>{
+emuladores.innerHTML+=`
+<div class="card">
+<img src="${e.img}">
+<div class="content">
+<h3>${e.nombre}</h3>
+<p>${e.desc}</p>
+<div class="btns">
+<a href="${e.link}" class="btn blue">Descargar</a>
+</div>
+</div>
+</div>`;
+});
+}
+cargarEmuladores();
+
+function cargarBios(){
+bios.innerHTML="";
+listaBios.forEach(b=>{
+bios.innerHTML+=`
+<div class="card">
+<img src="${b.img}">
+<div class="content">
+<h3>${b.nombre}</h3>
+<p>${b.desc}</p>
+<div class="btns">
+<a href="${b.link}" class="btn blue">Descargar</a>
+</div>
+</div>
+</div>`;
+});
+}
+cargarBios();
+
+// CRUD
+function agregarJuego(){
+let nuevo={nombre:nombre.value,img:img.value,desc:desc.value,link1:link1.value,link2:link2.value};
+if(editIndex==null) juegos.push(nuevo);
+else juegos[editIndex]=nuevo, editIndex=null;
+cargar();
+}
+
+function editar(i){
+let j=juegos[i];
+nombre.value=j.nombre;
+img.value=j.img;
+desc.value=j.desc;
+link1.value=j.link1;
+link2.value=j.link2;
+editIndex=i;
+}
+
+function eliminar(i){
+juegos.splice(i,1);
+cargar();
+}
+
+// buscador
+search.addEventListener("keyup", e=>{
+let val=e.target.value.toLowerCase();
+document.querySelectorAll(".card").forEach(c=>{
+c.style.display=c.innerText.toLowerCase().includes(val)?"block":"none";
+});
+});
 </script>
 
 </body>
