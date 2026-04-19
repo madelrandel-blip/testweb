@@ -43,14 +43,38 @@ header{
 
 .search{padding:8px;border-radius:5px;border:none;}
 
-.header-btn{margin-left:auto;display:flex;gap:10px;}
+.header-btn{
+    margin-left:auto;
+    display:flex;
+    gap:10px;
+}
+
 .header-btn button{
-    padding:8px 12px;
+    padding:8px 14px;
     border:none;
-    border-radius:6px;
+    border-radius:8px;
     cursor:pointer;
     background:linear-gradient(45deg,var(--accent),var(--accent2));
     color:white;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    transition:0.3s;
+}
+
+/* botón activo */
+.header-btn button.active{
+    box-shadow:0 0 10px var(--accent);
+    transform:scale(1.05);
+}
+
+/* animación pestañas */
+.fade{
+    animation:fadeIn 0.35s ease;
+}
+@keyframes fadeIn{
+    from{opacity:0; transform:translateY(10px);}
+    to{opacity:1; transform:translateY(0);}
 }
 
 /* login */
@@ -76,7 +100,6 @@ header{
     border-radius:5px;
 }
 
-/* botones modernos */
 .login-content button{
     padding:10px 16px;
     margin:8px 5px 0;
@@ -85,7 +108,6 @@ header{
     cursor:pointer;
     font-weight:bold;
     color:white;
-    transition:all 0.25s ease;
 }
 .login-content button:first-of-type{
     background:linear-gradient(135deg,#38bdf8,#6366f1);
@@ -118,12 +140,10 @@ header{
 .card:hover{transform:scale(1.05);}
 .card img{width:100%;}
 
-/* contenido */
 .content{padding:10px;display:flex;flex-direction:column;flex:1;}
 .content h3{font-size:14px;margin:5px 0;}
 .content p{font-size:12px;color:#9aa7b1;}
 
-/* botones hover */
 .btns{
     display:flex;
     gap:6px;
@@ -159,37 +179,18 @@ header{
 <input type="text" id="search" class="search" placeholder="Buscar...">
 
 <div class="header-btn">
-<button onclick="mostrarTienda()">Inicio</button>
-<button onclick="mostrarEmuladores()">Emuladores</button>
-<button onclick="mostrarBios()">Bios/Keys</button>
-<button onclick="abrirLogin()">Admin</button>
-<button onclick="logout()" id="logoutBtn" style="display:none;">Salir</button>
+<button id="btnInicio" onclick="mostrarTienda()">🏠 Inicio</button>
+<button id="btnEmu" onclick="mostrarEmuladores()">🎮 Emuladores</button>
+<button id="btnBios" onclick="mostrarBios()">🧩 Bios/Keys</button>
+<button onclick="abrirLogin()">🔐 Admin</button>
+<button onclick="logout()" id="logoutBtn" style="display:none;">🚪 Salir</button>
 </div>
 </header>
 
-<div id="loginBox">
-<div class="login-content">
-<h3>Admin</h3>
-<input id="user" placeholder="Usuario">
-<input id="pass" type="password" placeholder="Contraseña">
-<button onclick="login()">Entrar</button>
-<button onclick="cerrarLogin()">Cerrar</button>
-</div>
-</div>
-
-<div id="adminPanel">
-<h2>Panel Admin</h2>
-<input id="nombre" placeholder="Nombre">
-<input id="img" placeholder="Imagen URL">
-<input id="desc" placeholder="Descripción">
-<input id="link1" placeholder="Link 1">
-<input id="link2" placeholder="Link 2">
-<button onclick="agregarJuego()">Guardar</button>
-</div>
-
-<div class="store" id="store"></div>
-<div class="store" id="emuladores" style="display:none;"></div>
-<div class="store" id="bios" style="display:none;"></div>
+<!-- contenido -->
+<div class="store fade" id="store"></div>
+<div class="store fade" id="emuladores" style="display:none;"></div>
+<div class="store fade" id="bios" style="display:none;"></div>
 
 <script>
 // estrellas
@@ -201,127 +202,39 @@ s.style.left=Math.random()*100+"%";
 stars.appendChild(s);
 }
 
-// login
-let admin=false, editIndex=null;
-
-function abrirLogin(){loginBox.style.display="flex";}
-function cerrarLogin(){loginBox.style.display="none";}
-
-function login(){
-if(user.value==="Mad" && pass.value==="Papel#19"){
-admin=true;
-adminPanel.style.display="block";
-logoutBtn.style.display="inline-block";
-cerrarLogin();
-cargar();
-}else alert("Datos incorrectos");
+// botones activos
+function activar(btn){
+document.querySelectorAll(".header-btn button").forEach(b=>b.classList.remove("active"));
+btn.classList.add("active");
 }
 
-function logout(){
-admin=false;
-adminPanel.style.display="none";
-logoutBtn.style.display="none";
-cargar();
+// pestañas con animación
+function mostrarTienda(){
+store.style.display="grid";
+emuladores.style.display="none";
+bios.style.display="none";
+store.classList.add("fade");
+activar(btnInicio);
 }
 
-// pestañas
-function mostrarTienda(){store.style.display="grid";emuladores.style.display="none";bios.style.display="none";}
-function mostrarEmuladores(){store.style.display="none";emuladores.style.display="grid";bios.style.display="none";}
-function mostrarBios(){store.style.display="none";emuladores.style.display="none";bios.style.display="grid";}
-
-// juegos completos
-let juegos = [
-{nombre:"The Legend of Zelda: Breath of the Wild", img:"https://art.gametdb.com/switch/box2/US/AAAAA.png", desc:"Mundo abierto", link1:"#", link2:"#"},
-{nombre:"The Legend of Zelda: Tears of the Kingdom", img:"https://art.gametdb.com/switch/box/US/AXN7A.png", desc:"Aventura", link1:"#", link2:"#"},
-{nombre:"The Legend of Zelda: Skyward Sword", img:"https://art.gametdb.com/switch/box/US/AZ89A.png?1696859490", desc:"Aventura", link1:"https://www.mediafire.com/file/zl5eumnm7kgq5iw/The+Legend+of+Zelda+Skyward+Sword+HD+[v1.0.1].nsp/file", link2:"#"},
-{nombre:"Mario Kart 8 Deluxe", img:"https://art.gametdb.com/switch/box/US/AABPA.png", desc:"Carreras", link1:"#", link2:"#"},
-{nombre:"Super Smash Bros Ultimate", img:"https://art.gametdb.com/switch/box/MX/AAABA.png", desc:"Lucha", link1:"#", link2:"#"},
-{nombre:"Mario Odyssey", img:"https://art.gametdb.com/switch/box/US/AAACA.png", desc:"Aventura", link1:"#", link2:"#"},
-{nombre:"Pokemon Scarlet", img:"https://art.gametdb.com/switch/box/US/ALZXA.png", desc:"Pokemon", link1:"#", link2:"#"},
-{nombre:"Animal Crossing New Horizons", img:"https://art.gametdb.com/switch/box/US/ACBAA.png", desc:"Simulación", link1:"#", link2:"#"},
-{nombre:"Metroid Dread", img:"https://art.gametdb.com/switch/box/US/AYL8A.png", desc:"Acción", link1:"#", link2:"#"},
-{nombre:"Kirby Forgotten Land", img:"https://art.gametdb.com/switch/box/US/ARZGA.png", desc:"Plataformas", link1:"#", link2:"#"},
-{nombre:"Minecraft", img:"https://art.gametdb.com/switch/box/US/AEUCA.png", desc:"Sandbox", link1:"#", link2:"#"},
-{nombre:"Super Mario 3D World + Bowser's Fury", img:"https://art.gametdb.com/switch/box/US/AUZPA.png", desc:"Cooperativo", link1:"#", link2:"#"},
-{nombre:"Tomodachi Life Living the Dream", img:"https://art.gametdb.com/switch/box/CA/BLFGA.png?1775153578", desc:"Simulador", link1:"https://gofile.io/d/yq4GNq", link2:"#"}
-];
-
-// emuladores
-let listaEmuladores = [
-{nombre:"Yuzu Emulator", img:"https://upload.wikimedia.org/wikipedia/commons/7/7d/Yuzu_Logo.png", desc:"Nintendo Switch", link:"#"},
-{nombre:"Dolphin Emulator", img:"https://upload.wikimedia.org/wikipedia/commons/3/3a/Dolphin-logo.png", desc:"GameCube / Wii", link:"#"},
-{nombre:"PCSX2", img:"https://upload.wikimedia.org/wikipedia/commons/6/60/PCSX2_icon.png", desc:"PlayStation 2", link:"#"},
-{nombre:"PPSSPP", img:"https://upload.wikimedia.org/wikipedia/commons/0/06/PPSSPP_logo.svg", desc:"PSP", link:"#"}
-];
-
-// bios
-let listaBios = [
-{nombre:"PS2 BIOS Pack", img:"https://upload.wikimedia.org/wikipedia/commons/6/60/PCSX2_icon.png", desc:"BIOS para PCSX2", link:"#"},
-{nombre:"Switch Keys", img:"https://upload.wikimedia.org/wikipedia/commons/7/7d/Yuzu_Logo.png", desc:"Keys para Yuzu", link:"#"}
-];
-
-// cargar
-function cargar(){
-store.innerHTML="";
-juegos.forEach((j,i)=>{
-store.innerHTML+=`
-<div class="card">
-<img src="${j.img}">
-<div class="content">
-<h3>${j.nombre}</h3>
-<p>${j.desc}</p>
-
-<div class="btns">
-<a href="${j.link1}" class="btn blue">Descargar</a>
-<a href="${j.link2}" class="btn green">Descargar</a>
-</div>
-
-${admin?`
-<div class="admin-actions">
-<button onclick="editar(${i})">✏️</button>
-<button onclick="eliminar(${i})">🗑️</button>
-</div>`:""}
-</div>
-</div>`;
-});
+function mostrarEmuladores(){
+store.style.display="none";
+emuladores.style.display="grid";
+bios.style.display="none";
+emuladores.classList.add("fade");
+activar(btnEmu);
 }
-cargar();
 
-function cargarEmuladores(){
-emuladores.innerHTML="";
-listaEmuladores.forEach(e=>{
-emuladores.innerHTML+=`
-<div class="card">
-<img src="${e.img}">
-<div class="content">
-<h3>${e.nombre}</h3>
-<p>${e.desc}</p>
-<div class="btns">
-<a href="${e.link}" class="btn blue">Descargar</a>
-</div>
-</div>
-</div>`;
-});
+function mostrarBios(){
+store.style.display="none";
+emuladores.style.display="none";
+bios.style.display="grid";
+bios.classList.add("fade");
+activar(btnBios);
 }
-cargarEmuladores();
 
-function cargarBios(){
-bios.innerHTML="";
-listaBios.forEach(b=>{
-bios.innerHTML+=`
-<div class="card">
-<img src="${b.img}">
-<div class="content">
-<h3>${b.nombre}</h3>
-<p>${b.desc}</p>
-<div class="btns">
-<a href="${b.link}" class="btn blue">Descargar</a>
-</div>
-</div>
-</div>`;
-});
-}
-cargarBios();
+// activar inicio al cargar
+window.onload = () => activar(btnInicio);
 </script>
 
 </body>
