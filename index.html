@@ -53,7 +53,7 @@ header{
     box-shadow:0 0 10px var(--accent);
 }
 
-/* LOGIN MODERNO */
+/* LOGIN */
 #loginBox{
     display:none;
     position:fixed;
@@ -69,37 +69,7 @@ header{
     border-radius:15px;
     text-align:center;
     width:280px;
-    box-shadow:0 0 20px rgba(0,0,0,0.6);
 }
-
-.login-content input{
-    width:90%;
-    padding:10px;
-    margin:8px 0;
-    border:none;
-    border-radius:8px;
-}
-
-.login-content button{
-    padding:10px 14px;
-    margin-top:10px;
-    border:none;
-    border-radius:10px;
-    cursor:pointer;
-    color:white;
-    font-weight:bold;
-    transition:0.25s;
-}
-
-.btn-login{
-    background:linear-gradient(135deg,#38bdf8,#6366f1);
-}
-.btn-login:hover{transform:scale(1.05);}
-
-.btn-close{
-    background:rgba(255,255,255,0.1);
-}
-.btn-close:hover{background:rgba(255,255,255,0.2);}
 
 /* PANEL */
 #adminPanel{
@@ -114,7 +84,12 @@ header{
     border:none;
 }
 
-/* GRID (TAMAÑO ORIGINAL) */
+/* 🔥 MODO EDICIÓN VISUAL */
+#btnGuardar.editando{
+    background:linear-gradient(135deg,#f59e0b,#d97706);
+}
+
+/* GRID */
 .store{
     display:grid;
     grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
@@ -135,7 +110,6 @@ header{
 
 .card img{width:100%;}
 
-/* CONTENT */
 .content{
     padding:10px;
     display:flex;
@@ -146,7 +120,6 @@ header{
 .content h3{font-size:14px;margin:5px 0;}
 .content p{font-size:12px;color:#9aa7b1;}
 
-/* BOTONES ANIMADOS */
 .btns{
     display:flex;
     gap:6px;
@@ -160,7 +133,6 @@ header{
     transform:translateY(0);
 }
 
-/* BOTONES */
 .btn{
     flex:1;
     padding:7px;
@@ -169,10 +141,7 @@ header{
     color:white;
     border:none;
     cursor:pointer;
-    transition:0.2s;
 }
-.btn:hover{transform:scale(1.05);}
-
 .blue{background:var(--accent);}
 .green{background:var(--green);}
 
@@ -194,18 +163,16 @@ header{
 </div>
 </header>
 
-<!-- LOGIN -->
 <div id="loginBox">
 <div class="login-content">
 <h3>Panel Admin</h3>
 <input id="user" placeholder="Email">
 <input id="pass" type="password" placeholder="Contraseña">
-<button class="btn-login" onclick="login()">Entrar</button>
-<button class="btn-close" onclick="cerrarLogin()">Cerrar</button>
+<button onclick="login()">Entrar</button>
+<button onclick="cerrarLogin()">Cerrar</button>
 </div>
 </div>
 
-<!-- PANEL -->
 <div id="adminPanel">
 <input id="nombre" placeholder="Nombre">
 <input id="img" placeholder="Imagen URL">
@@ -332,6 +299,10 @@ editIndex=null;
 
 }catch(e){console.error(e);}
 
+/* 🔥 RESET VISUAL */
+btnGuardar.innerText="Guardar";
+btnGuardar.classList.remove("editando");
+
 guardando=false;
 btnGuardar.disabled=false;
 cargar();
@@ -344,6 +315,13 @@ desc.value=d;
 link1.value=l1;
 link2.value=l2;
 editIndex=id;
+
+/* 🔥 ACTIVAR MODO EDICIÓN */
+btnGuardar.innerText="Actualizar juego";
+btnGuardar.classList.add("editando");
+
+/* 🔥 SCROLL */
+adminPanel.scrollIntoView({behavior:"smooth"});
 };
 
 window.eliminar=async(id)=>{
