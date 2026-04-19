@@ -25,6 +25,7 @@ body{
                 var(--bg);
 }
 
+/* HEADER */
 header{
     background:rgba(10,15,30,0.7);
     backdrop-filter: blur(10px);
@@ -33,6 +34,7 @@ header{
     align-items:center;
 }
 
+/* BOTONES HEADER */
 .header-btn{
     margin-left:auto;
     display:flex;
@@ -46,6 +48,11 @@ header{
     cursor:pointer;
     background:linear-gradient(135deg,var(--accent),var(--accent2));
     color:white;
+    transition:0.25s;
+}
+.header-btn button:hover{
+    transform:scale(1.08);
+    box-shadow:0 0 10px var(--accent);
 }
 
 /* LOGIN */
@@ -66,32 +73,6 @@ header{
     width:280px;
 }
 
-.login-content input{
-    width:90%;
-    padding:10px;
-    margin:8px 0;
-    border:none;
-    border-radius:8px;
-}
-
-.btn-login{
-    background:linear-gradient(135deg,#38bdf8,#6366f1);
-    padding:10px;
-    border:none;
-    border-radius:10px;
-    color:white;
-    cursor:pointer;
-}
-
-.btn-close{
-    background:rgba(255,255,255,0.1);
-    padding:10px;
-    border:none;
-    border-radius:10px;
-    color:white;
-    cursor:pointer;
-}
-
 /* PANEL */
 #adminPanel{
     display:none;
@@ -99,14 +80,7 @@ header{
     padding:20px;
 }
 
-#adminPanel input{
-    padding:8px;
-    margin:5px;
-    border-radius:5px;
-    border:none;
-}
-
-/* GRID */
+/* GRID ORIGINAL */
 .store{
     display:grid;
     grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
@@ -119,15 +93,59 @@ header{
     background:rgba(15,23,42,0.8);
     border-radius:10px;
     overflow:hidden;
+    transition:0.3s;
     display:flex;
     flex-direction:column;
 }
-.card img{width:100%;}
-
-.content{
-    padding:10px;
+.card:hover{
+    transform:scale(1.05);
 }
 
+.card img{width:100%;}
+
+/* CONTENIDO */
+.content{
+    padding:10px;
+    display:flex;
+    flex-direction:column;
+    flex:1;
+}
+
+.content h3{font-size:14px;margin:5px 0;}
+.content p{font-size:12px;color:#9aa7b1;}
+
+/* BOTONES ANIMADOS */
+.btns{
+    display:flex;
+    gap:6px;
+    margin-top:auto;
+    opacity:0;
+    transform:translateY(10px);
+    transition:0.3s;
+}
+
+.card:hover .btns{
+    opacity:1;
+    transform:translateY(0);
+}
+
+/* BOTONES */
+.btn{
+    flex:1;
+    padding:7px;
+    font-size:12px;
+    border-radius:5px;
+    color:white;
+    border:none;
+    cursor:pointer;
+    transition:0.2s;
+}
+.btn:hover{transform:scale(1.05);}
+
+.blue{background:var(--accent);}
+.green{background:var(--green);}
+
+/* ADMIN */
 .admin-actions{
     display:flex;
     gap:5px;
@@ -150,11 +168,10 @@ header{
 <!-- LOGIN -->
 <div id="loginBox">
 <div class="login-content">
-<h3>Admin</h3>
 <input id="user" placeholder="Email">
 <input id="pass" type="password" placeholder="Contraseña">
-<button class="btn-login" onclick="login()">Entrar</button>
-<button class="btn-close" onclick="cerrarLogin()">Cerrar</button>
+<button onclick="login()">Entrar</button>
+<button onclick="cerrarLogin()">Cerrar</button>
 </div>
 </div>
 
@@ -178,16 +195,10 @@ let admin=false;
 let editId=null;
 </script>
 
-<!-- 🔥 FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { 
-getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc 
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-import { 
-getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged 
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCnqFKUPqbcTt0As9atnSQML00ReFgcgbw",
@@ -201,34 +212,29 @@ const auth = getAuth(app);
 
 /* LOGIN */
 window.login = async ()=>{
-try{
 await signInWithEmailAndPassword(auth,user.value,pass.value);
 cerrarLogin();
-}catch{
-alert("Error al iniciar sesión");
-}
 };
 
 window.logout = async ()=>{
 await signOut(auth);
 };
 
-/* CONTROL ADMIN */
-onAuthStateChanged(auth, (user)=>{
-admin = !!user;
-adminPanel.style.display = admin ? "block":"none";
-logoutBtn.style.display = admin ? "inline-block":"none";
+onAuthStateChanged(auth,(user)=>{
+admin=!!user;
+adminPanel.style.display=admin?"block":"none";
+logoutBtn.style.display=admin?"inline-block":"none";
 cargar();
 });
 
-/* CARGAR JUEGOS */
-window.cargar = async ()=>{
-const snapshot = await getDocs(collection(db,"juegos"));
+/* CARGAR */
+window.cargar=async()=>{
+const snap=await getDocs(collection(db,"juegos"));
 let html="";
 
-snapshot.forEach(docSnap=>{
-const j = docSnap.data();
-const id = docSnap.id;
+snap.forEach(docSnap=>{
+const j=docSnap.data();
+const id=docSnap.id;
 
 html+=`
 <div class="card">
@@ -237,23 +243,26 @@ html+=`
 <h3>${j.nombre}</h3>
 <p>${j.desc}</p>
 
-<div class="admin-actions">
-${admin?`
-<button onclick="editarJuego('${id}','${j.nombre}','${j.img}','${j.desc}','${j.link1}','${j.link2}')">✏️</button>
-<button onclick="eliminarJuego('${id}')">🗑️</button>
-`:""}
+<div class="btns">
+<a href="${j.link1}" class="btn blue">Obtener</a>
+<a href="${j.link2}" class="btn green">Obtener</a>
 </div>
 
+${admin?`
+<div class="admin-actions">
+<button onclick="editarJuego('${id}','${j.nombre}','${j.img}','${j.desc}','${j.link1}','${j.link2}')">✏️</button>
+<button onclick="eliminarJuego('${id}')">🗑️</button>
+</div>`:""}
+
 </div>
-</div>
-`;
+</div>`;
 });
 
 store.innerHTML=html;
 };
 
-/* GUARDAR */
-window.guardarJuego = async ()=>{
+/* CRUD */
+window.guardarJuego=async()=>{
 let data={
 nombre:nombre.value,
 img:img.value,
@@ -272,8 +281,7 @@ editId=null;
 cargar();
 };
 
-/* EDITAR */
-window.editarJuego = (id,n,i,d,l1,l2)=>{
+window.editarJuego=(id,n,i,d,l1,l2)=>{
 nombre.value=n;
 img.value=i;
 desc.value=d;
@@ -282,12 +290,10 @@ link2.value=l2;
 editId=id;
 };
 
-/* ELIMINAR */
-window.eliminarJuego = async(id)=>{
+window.eliminarJuego=async(id)=>{
 await deleteDoc(doc(db,"juegos",id));
 cargar();
 };
-
 </script>
 
 </body>
