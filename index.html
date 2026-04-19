@@ -24,7 +24,7 @@ body{
                 var(--bg);
 }
 
-/* ESTRELLAS */
+/* CANVAS ESTRELLAS */
 #stars{
     position:fixed;
     inset:0;
@@ -56,24 +56,11 @@ header{
     cursor:pointer;
     background:linear-gradient(135deg,var(--accent),var(--accent2));
     color:white;
+    transition:0.25s;
 }
-
-/* 🔍 BUSCADOR */
-.search-box{
-    padding:10px 20px;
-    position:relative;
-    z-index:1;
-}
-
-.search-box input{
-    width:100%;
-    padding:10px;
-    border-radius:10px;
-    border:none;
-    background:#020617;
-    color:white;
-    outline:none;
-    border:1px solid rgba(255,255,255,0.1);
+.header-btn button:hover{
+    transform:scale(1.08);
+    box-shadow:0 0 10px var(--accent);
 }
 
 /* LOGIN MODERNO */
@@ -92,9 +79,17 @@ header{
     background:rgba(15,23,42,0.75);
     border:1px solid rgba(125,211,252,0.2);
     backdrop-filter: blur(14px);
-    padding:30px;
+    padding:30px 25px;
     border-radius:20px;
     width:300px;
+    box-shadow:0 0 25px rgba(125,211,252,0.15);
+    animation:fadeIn 0.4s ease;
+    text-align:center;
+}
+
+.login-content h3{
+    margin-bottom:15px;
+    font-weight:600;
 }
 
 .login-content input{
@@ -103,8 +98,16 @@ header{
     margin:8px 0;
     border-radius:10px;
     border:none;
+    outline:none;
     background:#020617;
     color:white;
+    border:1px solid rgba(255,255,255,0.08);
+    transition:0.25s;
+}
+
+.login-content input:focus{
+    border:1px solid var(--accent);
+    box-shadow:0 0 10px var(--accent);
 }
 
 .login-content button{
@@ -113,18 +116,43 @@ header{
     margin-top:10px;
     border:none;
     border-radius:10px;
+    cursor:pointer;
     background:linear-gradient(135deg,var(--accent),var(--accent2));
     color:white;
+    transition:0.25s;
+}
+
+.login-content button:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 12px var(--accent);
+}
+
+@keyframes fadeIn{
+    from{opacity:0; transform:translateY(10px);}
+    to{opacity:1; transform:translateY(0);}
 }
 
 /* PANEL */
 #adminPanel{
     display:none;
+    background:rgba(10,15,30,0.8);
     padding:20px;
     position:relative;
     z-index:1;
 }
+#adminPanel input{
+    padding:8px;
+    margin:5px;
+    border-radius:5px;
+    border:none;
+}
 
+/* modo edición */
+#btnGuardar.editando{
+    background:linear-gradient(135deg,#f59e0b,#d97706);
+}
+
+/* GRID */
 .store{
     display:grid;
     grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
@@ -134,25 +162,59 @@ header{
     z-index:1;
 }
 
+/* CARD */
 .card{
     background:rgba(15,23,42,0.8);
     border-radius:10px;
     overflow:hidden;
+    transition:0.3s;
+    display:flex;
+    flex-direction:column;
 }
+.card:hover{transform:scale(1.05);}
 
 .card img{width:100%;}
 
-.content{padding:10px;}
-
-.btn{
-    padding:7px;
-    border:none;
-    border-radius:5px;
-    color:white;
+.content{
+    padding:10px;
+    display:flex;
+    flex-direction:column;
+    flex:1;
 }
 
+.content h3{font-size:14px;margin:5px 0;}
+.content p{font-size:12px;color:#9aa7b1;}
+
+.btns{
+    display:flex;
+    gap:6px;
+    margin-top:auto;
+    opacity:0;
+    transform:translateY(10px);
+    transition:0.3s;
+}
+.card:hover .btns{
+    opacity:1;
+    transform:translateY(0);
+}
+
+.btn{
+    flex:1;
+    padding:7px;
+    font-size:12px;
+    border-radius:5px;
+    color:white;
+    border:none;
+    cursor:pointer;
+}
 .blue{background:var(--accent);}
 .green{background:var(--green);}
+
+.admin-actions{
+    display:flex;
+    gap:5px;
+    margin-top:5px;
+}
 </style>
 </head>
 
@@ -167,11 +229,6 @@ header{
 <button onclick="logout()" id="logoutBtn" style="display:none;">🚪 Salir</button>
 </div>
 </header>
-
-<!-- 🔍 BUSCADOR -->
-<div class="search-box">
-<input type="text" id="buscador" placeholder="Buscar juegos...">
-</div>
 
 <div id="loginBox">
 <div class="login-content">
@@ -202,19 +259,11 @@ let admin=false;
 let editIndex=null;
 let guardando=false;
 let cargando=false;
-
-/* 🔍 FILTRO EN TIEMPO REAL */
-buscador.addEventListener("input", ()=>{
-let filtro = buscador.value.toLowerCase();
-document.querySelectorAll(".card").forEach(card=>{
-card.style.display = card.innerText.toLowerCase().includes(filtro) ? "block" : "none";
-});
-});
 </script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
@@ -239,50 +288,168 @@ await signInWithEmailAndPassword(auth,user.value,pass.value);
 cerrarLogin();
 };
 
-window.logout = async ()=>{ await signOut(auth); };
+window.logout = async ()=>{
+await signOut(auth);
+};
 
 window.cargar = async ()=>{
+
+if(cargando) return;
+cargando = true;
+
 const snapshot=await getDocs(collection(db,"juegos"));
+
 let html="";
+
 snapshot.forEach(docSnap=>{
 const j=docSnap.data();
-html+=`<div class="card">
+const id=docSnap.id;
+
+html+=`
+<div class="card">
 <img src="${j.img}">
 <div class="content">
 <h3>${j.nombre}</h3>
 <p>${j.desc}</p>
-</div></div>`;
+
+<div class="btns">
+<button class="btn blue">Ver enlace</button>
+<button class="btn green">Ver enlace</button>
+</div>
+
+${admin?`
+<div class="admin-actions">
+<button onclick='editar(${JSON.stringify({
+  id: id,
+  nombre: j.nombre,
+  img: j.img,
+  desc: j.desc,
+  link1: j.link1,
+  link2: j.link2
+})})'>✏️</button>
+
+<button onclick="eliminar('${id}')">🗑️</button>
+</div>`:""}
+
+</div>
+</div>`;
 });
+
 store.innerHTML=html;
+cargando=false;
+};
+
+window.agregarJuego = async function(){
+
+if(guardando) return;
+guardando=true;
+btnGuardar.disabled=true;
+
+let nuevo={
+nombre:nombre.value,
+img:img.value,
+desc:desc.value,
+link1:link1.value,
+link2:link2.value
+};
+
+try{
+
+const q=query(collection(db,"juegos"), where("nombre","==",nombre.value));
+const snap=await getDocs(q);
+
+if(!snap.empty && editIndex==null){
+alert("Este juego ya existe");
+guardando=false;
+btnGuardar.disabled=false;
+return;
+}
+
+if(editIndex==null){
+await addDoc(collection(db,"juegos"),nuevo);
+}else{
+await updateDoc(doc(db,"juegos",editIndex),nuevo);
+editIndex=null;
+}
+
+}catch(e){console.error(e);}
+
+btnGuardar.innerText="Guardar";
+btnGuardar.classList.remove("editando");
+
+guardando=false;
+btnGuardar.disabled=false;
+cargar();
+};
+
+window.editar=(j)=>{
+nombre.value = j.nombre;
+img.value = j.img;
+desc.value = j.desc;
+link1.value = j.link1;
+link2.value = j.link2;
+
+editIndex = j.id;
+
+btnGuardar.innerText="Actualizar juego";
+btnGuardar.classList.add("editando");
+
+adminPanel.scrollIntoView({behavior:"smooth"});
+};
+
+window.eliminar=async(id)=>{
+await deleteDoc(doc(db,"juegos",id));
+cargar();
 };
 </script>
 
+<!-- ESTRELLAS OPTIMIZADAS -->
 <script>
 const canvas = document.getElementById("stars");
 const ctx = canvas.getContext("2d");
+
 let stars = [];
+let numStars = 80;
+
 function resize(){
-canvas.width=innerWidth;
-canvas.height=innerHeight;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 }
 resize();
-addEventListener("resize",resize);
+window.addEventListener("resize", resize);
 
-for(let i=0;i<80;i++){
-stars.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*1.2,s:Math.random()*0.3});
+function initStars(){
+    stars = [];
+    for(let i=0;i<numStars;i++){
+        stars.push({
+            x: Math.random()*canvas.width,
+            y: Math.random()*canvas.height,
+            r: Math.random()*1.2,
+            speed: Math.random()*0.3 + 0.05
+        });
+    }
 }
+initStars();
 
 function draw(){
-ctx.clearRect(0,0,canvas.width,canvas.height);
-ctx.fillStyle="white";
-stars.forEach(s=>{
-ctx.beginPath();
-ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-ctx.fill();
-s.y+=s.s;
-if(s.y>canvas.height){s.y=0;s.x=Math.random()*canvas.width;}
-});
-requestAnimationFrame(draw);
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    ctx.fillStyle = "white";
+
+    for(let s of stars){
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+        ctx.fill();
+
+        s.y += s.speed;
+
+        if(s.y > canvas.height){
+            s.y = 0;
+            s.x = Math.random()*canvas.width;
+        }
+    }
+
+    requestAnimationFrame(draw);
 }
 draw();
 </script>
