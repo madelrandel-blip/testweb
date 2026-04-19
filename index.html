@@ -237,9 +237,7 @@ header{
 
 <header>
 <h1>🌌 Luma Switch</h1>
-
 <input type="text" id="buscador" placeholder="Buscar...">
-
 <div class="header-btn">
 <button onclick="abrirLogin()">🔐 Admin</button>
 <button onclick="logout()" id="logoutBtn" style="display:none;">🚪 Salir</button>
@@ -275,6 +273,46 @@ let admin=false;
 let editIndex=null;
 let guardando=false;
 let cargando=false;
+
+/* 🔎 NUEVO: almacenamiento para búsqueda */
+let juegosData = [];
+
+/* 🔎 FILTRO EN TIEMPO REAL */
+buscador.addEventListener("input", ()=>{
+    const texto = buscador.value.toLowerCase();
+    render(juegosData.filter(j =>
+        j.nombre.toLowerCase().includes(texto) ||
+        j.desc.toLowerCase().includes(texto)
+    ));
+});
+
+/* 🔎 render reutilizable */
+function render(lista){
+    let html="";
+    lista.forEach(j=>{
+        html+=`
+        <div class="card">
+        <img src="${j.img}">
+        <div class="content">
+        <h3>${j.nombre}</h3>
+        <p>${j.desc}</p>
+
+        <div class="btns">
+        <button class="btn blue">Ver enlace</button>
+        <button class="btn green">Ver enlace</button>
+        </div>
+
+        ${admin?`
+        <div class="admin-actions">
+        <button onclick='editar(${JSON.stringify(j)})'>✏️</button>
+        <button onclick="eliminar('${j.id}')">🗑️</button>
+        </div>`:""}
+
+        </div>
+        </div>`;
+    });
+    store.innerHTML = html;
+}
 </script>
 
 <script type="module">
@@ -315,43 +353,17 @@ cargando = true;
 
 const snapshot=await getDocs(collection(db,"juegos"));
 
-let html="";
+juegosData = [];
 
 snapshot.forEach(docSnap=>{
 const j=docSnap.data();
-const id=docSnap.id;
-
-html+=`
-<div class="card">
-<img src="${j.img}">
-<div class="content">
-<h3>${j.nombre}</h3>
-<p>${j.desc}</p>
-
-<div class="btns">
-<button class="btn blue">Ver enlace</button>
-<button class="btn green">Ver enlace</button>
-</div>
-
-${admin?`
-<div class="admin-actions">
-<button onclick='editar(${JSON.stringify({
-  id: id,
-  nombre: j.nombre,
-  img: j.img,
-  desc: j.desc,
-  link1: j.link1,
-  link2: j.link2
-})})'>✏️</button>
-
-<button onclick="eliminar('${id}')">🗑️</button>
-</div>`:""}
-
-</div>
-</div>`;
+j.id = docSnap.id;
+juegosData.push(j);
 });
 
-store.innerHTML=html;
+/* 🔎 usa render */
+render(juegosData);
+
 cargando=false;
 };
 
