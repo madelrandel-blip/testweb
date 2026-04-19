@@ -24,23 +24,16 @@ body{
                 var(--bg);
 }
 
-.stars{position:fixed;width:100%;height:100%;z-index:-1;}
-.star{position:absolute;width:2px;height:2px;background:white;animation: twinkle 2s infinite alternate;}
-@keyframes twinkle{from{opacity:0.2;}to{opacity:1;}}
-
 header{
     background:rgba(10,15,30,0.7);
     backdrop-filter: blur(10px);
     padding:15px;
     display:flex;
-    gap:15px;
     align-items:center;
 }
 
 .header-btn{
     margin-left:auto;
-    display:flex;
-    gap:10px;
 }
 
 .header-btn button{
@@ -50,11 +43,8 @@ header{
     cursor:pointer;
     background:linear-gradient(135deg,var(--accent),var(--accent2));
     color:white;
-    transition:0.25s;
 }
-.header-btn button:hover{transform:scale(1.05);}
 
-/* LOGIN */
 #loginBox{
     display:none;
     position:fixed;
@@ -69,28 +59,7 @@ header{
     padding:25px;
     border-radius:15px;
     text-align:center;
-    width:280px;
 }
-
-.login-content input{
-    width:90%;
-    padding:10px;
-    margin:8px 0;
-    border:none;
-    border-radius:8px;
-}
-
-.login-content button{
-    padding:10px;
-    margin-top:10px;
-    border:none;
-    border-radius:10px;
-    cursor:pointer;
-    color:white;
-}
-
-.btn-login{background:linear-gradient(135deg,#38bdf8,#6366f1);}
-.btn-close{background:rgba(255,255,255,0.1);}
 
 .store{
     display:grid;
@@ -103,31 +72,20 @@ header{
     background:rgba(15,23,42,0.8);
     border-radius:10px;
     overflow:hidden;
-    display:flex;
-    flex-direction:column;
 }
+
 .card img{width:100%;}
 
-.content{
-    padding:10px;
-    display:flex;
-    flex-direction:column;
-}
+.content{padding:10px;}
 
-.btns{
-    display:flex;
-    gap:6px;
-    margin-top:auto;
-}
+.btns{display:flex; gap:5px;}
 
 .btn{
     flex:1;
-    padding:7px;
-    text-align:center;
-    font-size:12px;
+    padding:6px;
+    border:none;
     border-radius:5px;
     color:white;
-    border:none;
     cursor:pointer;
 }
 .blue{background:var(--accent);}
@@ -145,18 +103,16 @@ header{
 </div>
 </header>
 
-<!-- LOGIN -->
 <div id="loginBox">
 <div class="login-content">
 <h3>Admin</h3>
 <input id="user" placeholder="Email">
 <input id="pass" type="password" placeholder="Contraseña">
-<button class="btn-login" onclick="login()">Entrar</button>
-<button class="btn-close" onclick="cerrarLogin()">Cerrar</button>
+<button onclick="login()">Entrar</button>
+<button onclick="cerrarLogin()">Cerrar</button>
 </div>
 </div>
 
-<!-- PANEL -->
 <div id="adminPanel" style="display:none;">
 <input id="nombre" placeholder="Nombre">
 <input id="img" placeholder="Imagen URL">
@@ -173,13 +129,13 @@ function abrirLogin(){loginBox.style.display="flex";}
 function cerrarLogin(){loginBox.style.display="none";}
 let admin=false, editIndex=null;
 
-/* 🔒 BLOQUEO ANTI DUPLICADOS */
+/* 🔒 BLOQUEO DOBLE CLICK */
 let guardando = false;
 </script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
@@ -220,7 +176,6 @@ const querySnapshot = await getDocs(collection(db, "juegos"));
 
 querySnapshot.forEach((docSnap)=>{
 const j = docSnap.data();
-const id = docSnap.id;
 
 store.innerHTML += `
 <div class="card">
@@ -228,39 +183,53 @@ store.innerHTML += `
 <div class="content">
 <h3>${j.nombre}</h3>
 <p>${j.desc}</p>
-
 <div class="btns">
-<button onclick="abrirSafe('${j.link1}')" class="btn blue">Ver</button>
-<button onclick="abrirSafe('${j.link2}')" class="btn green">Ver</button>
+<button class="btn blue">Ver</button>
+<button class="btn green">Ver</button>
 </div>
-
 </div>
 </div>`;
 });
 };
 
-/* 🔥 FUNCIÓN CORREGIDA */
+/* 🚫 ANTI DUPLICADOS + 🔒 BLOQUEO */
 window.agregarJuego = async function(){
 
 if(guardando) return;
 guardando = true;
 btnGuardar.disabled = true;
 
+let nombreJuego = nombre.value.trim().toLowerCase();
+
 let nuevo = {
-nombre:nombre.value,
-img:img.value,
-desc:desc.value,
-link1:link1.value,
-link2:link2.value
+nombre: nombre.value,
+img: img.value,
+desc: desc.value,
+link1: link1.value,
+link2: link2.value
 };
 
 try{
+
+// 🔍 BUSCAR DUPLICADOS
+const q = query(collection(db, "juegos"), where("nombre", "==", nombre.value));
+const snapshot = await getDocs(q);
+
+if(!snapshot.empty && editIndex == null){
+alert("❌ Este juego ya existe");
+guardando = false;
+btnGuardar.disabled = false;
+return;
+}
+
+// 💾 GUARDAR
 if(editIndex == null){
 await addDoc(collection(db, "juegos"), nuevo);
 }else{
 await updateDoc(doc(db,"juegos",editIndex), nuevo);
 editIndex = null;
 }
+
 }catch(e){
 console.error(e);
 alert("Error al guardar");
