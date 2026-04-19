@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Luma Switch</title>
+
+<title>Luma Switch - Juegos, Emuladores y Bios</title>
+<meta name="description" content="Luma Switch - Descarga juegos, emuladores y bios fácilmente.">
 
 <style>
 :root{
@@ -153,11 +155,11 @@ header{
 <div class="stars" id="stars"></div>
 
 <header>
-<h1>🌌 Luma Store</h1>
+<h1>🌌 Luma Switch</h1>
 <input type="text" id="search" class="search" placeholder="Buscar...">
 
 <div class="header-btn">
-<button onclick="mostrarTienda()">Tienda</button>
+<button onclick="mostrarTienda()">Inicio</button>
 <button onclick="mostrarEmuladores()">Emuladores</button>
 <button onclick="mostrarBios()">Bios/Keys</button>
 <button onclick="abrirLogin()">Admin</button>
@@ -227,7 +229,7 @@ function mostrarTienda(){store.style.display="grid";emuladores.style.display="no
 function mostrarEmuladores(){store.style.display="none";emuladores.style.display="grid";bios.style.display="none";}
 function mostrarBios(){store.style.display="none";emuladores.style.display="none";bios.style.display="grid";}
 
-// JUEGOS COMPLETOS RESTAURADOS
+// juegos completos
 let juegos = [
 {nombre:"The Legend of Zelda: Breath of the Wild", img:"https://art.gametdb.com/switch/box2/US/AAAAA.png", desc:"Mundo abierto", link1:"#", link2:"#"},
 {nombre:"The Legend of Zelda: Tears of the Kingdom", img:"https://art.gametdb.com/switch/box/US/AXN7A.png", desc:"Aventura", link1:"#", link2:"#"},
