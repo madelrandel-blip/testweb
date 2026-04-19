@@ -24,6 +24,7 @@ body{
                 var(--bg);
 }
 
+/* HEADER */
 header{
     background:rgba(10,15,30,0.7);
     backdrop-filter: blur(10px);
@@ -45,18 +46,86 @@ header{
     cursor:pointer;
     background:linear-gradient(135deg,var(--accent),var(--accent2));
     color:white;
+    transition:0.25s;
+}
+.header-btn button:hover{
+    transform:scale(1.08);
+    box-shadow:0 0 10px var(--accent);
 }
 
+/* LOGIN MODERNO */
+#loginBox{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.85);
+    justify-content:center;
+    align-items:center;
+}
+
+.login-content{
+    background:#0f172a;
+    padding:25px;
+    border-radius:15px;
+    text-align:center;
+    width:280px;
+    box-shadow:0 0 20px rgba(0,0,0,0.6);
+}
+
+.login-content input{
+    width:90%;
+    padding:10px;
+    margin:8px 0;
+    border:none;
+    border-radius:8px;
+}
+
+.login-content button{
+    padding:10px 14px;
+    margin-top:10px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    color:white;
+    font-weight:bold;
+    transition:0.25s;
+}
+
+.btn-login{
+    background:linear-gradient(135deg,#38bdf8,#6366f1);
+}
+.btn-login:hover{transform:scale(1.05);}
+
+.btn-close{
+    background:rgba(255,255,255,0.1);
+}
+.btn-close:hover{background:rgba(255,255,255,0.2);}
+
+/* PANEL */
+#adminPanel{
+    display:none;
+    background:rgba(10,15,30,0.8);
+    padding:20px;
+}
+#adminPanel input{
+    padding:8px;
+    margin:5px;
+    border-radius:5px;
+    border:none;
+}
+
+/* GRID (TAMAÑO ORIGINAL) */
 .store{
     display:grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
-    gap:20px;
+    grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
+    gap:18px;
     padding:20px;
 }
 
+/* CARD */
 .card{
     background:rgba(15,23,42,0.8);
-    border-radius:12px;
+    border-radius:10px;
     overflow:hidden;
     transition:0.3s;
     display:flex;
@@ -66,13 +135,18 @@ header{
 
 .card img{width:100%;}
 
+/* CONTENT */
 .content{
-    padding:12px;
+    padding:10px;
     display:flex;
     flex-direction:column;
     flex:1;
 }
 
+.content h3{font-size:14px;margin:5px 0;}
+.content p{font-size:12px;color:#9aa7b1;}
+
+/* BOTONES ANIMADOS */
 .btns{
     display:flex;
     gap:6px;
@@ -86,28 +160,26 @@ header{
     transform:translateY(0);
 }
 
+/* BOTONES */
 .btn{
     flex:1;
     padding:7px;
-    border:none;
-    border-radius:6px;
+    font-size:12px;
+    border-radius:5px;
     color:white;
+    border:none;
     cursor:pointer;
+    transition:0.2s;
 }
+.btn:hover{transform:scale(1.05);}
+
 .blue{background:var(--accent);}
 .green{background:var(--green);}
 
 .admin-actions{
     display:flex;
     gap:5px;
-    margin-top:6px;
-}
-
-.admin-actions button{
-    border:none;
-    padding:5px 8px;
-    border-radius:6px;
-    cursor:pointer;
+    margin-top:5px;
 }
 </style>
 </head>
@@ -123,17 +195,18 @@ header{
 </header>
 
 <!-- LOGIN -->
-<div id="loginBox" style="display:none;position:fixed;inset:0;background:black;justify-content:center;align-items:center;">
-<div style="background:#0f172a;padding:20px;border-radius:10px;">
-<input id="user" placeholder="Email"><br>
-<input id="pass" type="password" placeholder="Pass"><br>
-<button onclick="login()">Entrar</button>
-<button onclick="cerrarLogin()">Cerrar</button>
+<div id="loginBox">
+<div class="login-content">
+<h3>Panel Admin</h3>
+<input id="user" placeholder="Email">
+<input id="pass" type="password" placeholder="Contraseña">
+<button class="btn-login" onclick="login()">Entrar</button>
+<button class="btn-close" onclick="cerrarLogin()">Cerrar</button>
 </div>
 </div>
 
 <!-- PANEL -->
-<div id="adminPanel" style="display:none;">
+<div id="adminPanel">
 <input id="nombre" placeholder="Nombre">
 <input id="img" placeholder="Imagen URL">
 <input id="desc" placeholder="Descripción">
@@ -151,6 +224,7 @@ function cerrarLogin(){loginBox.style.display="none";}
 let admin=false;
 let editIndex=null;
 let guardando=false;
+let cargando=false;
 </script>
 
 <script type="module">
@@ -185,14 +259,19 @@ await signOut(auth);
 };
 
 window.cargar = async ()=>{
-store.innerHTML="";
+
+if(cargando) return;
+cargando = true;
+
 const snapshot=await getDocs(collection(db,"juegos"));
+
+let html="";
 
 snapshot.forEach(docSnap=>{
 const j=docSnap.data();
 const id=docSnap.id;
 
-store.innerHTML+=`
+html+=`
 <div class="card">
 <img src="${j.img}">
 <div class="content">
@@ -200,8 +279,8 @@ store.innerHTML+=`
 <p>${j.desc}</p>
 
 <div class="btns">
-<button class="btn blue">Ver</button>
-<button class="btn green">Ver</button>
+<button class="btn blue">Ver enlace</button>
+<button class="btn green">Ver enlace</button>
 </div>
 
 ${admin?`
@@ -213,6 +292,9 @@ ${admin?`
 </div>
 </div>`;
 });
+
+store.innerHTML=html;
+cargando=false;
 };
 
 window.agregarJuego = async function(){
@@ -268,8 +350,6 @@ window.eliminar=async(id)=>{
 await deleteDoc(doc(db,"juegos",id));
 cargar();
 };
-
-window.onload=()=>cargar();
 </script>
 
 </body>
