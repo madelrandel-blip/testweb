@@ -71,22 +71,30 @@ header{
     width:280px;
 }
 
-/* PANEL */
-#adminPanel{
-    display:none;
-    background:rgba(10,15,30,0.8);
-    padding:20px;
-}
-#adminPanel input{
-    padding:8px;
-    margin:5px;
-    border-radius:5px;
+.login-content input{
+    width:90%;
+    padding:10px;
+    margin:8px 0;
     border:none;
+    border-radius:8px;
 }
 
-/* modo edición */
-#btnGuardar.editando{
-    background:linear-gradient(135deg,#f59e0b,#d97706);
+.btn-login{
+    background:linear-gradient(135deg,#38bdf8,#6366f1);
+    border:none;
+    padding:10px;
+    border-radius:10px;
+    color:white;
+    cursor:pointer;
+}
+
+.btn-close{
+    background:rgba(255,255,255,0.1);
+    border:none;
+    padding:10px;
+    border-radius:10px;
+    color:white;
+    cursor:pointer;
 }
 
 /* GRID */
@@ -107,9 +115,9 @@ header{
     flex-direction:column;
 }
 .card:hover{transform:scale(1.05);}
-
 .card img{width:100%;}
 
+/* CONTENT */
 .content{
     padding:10px;
     display:flex;
@@ -117,9 +125,10 @@ header{
     flex:1;
 }
 
-.content h3{font-size:14px;margin:5px 0;}
+.content h3{font-size:14px;}
 .content p{font-size:12px;color:#9aa7b1;}
 
+/* BOTONES */
 .btns{
     display:flex;
     gap:6px;
@@ -142,6 +151,7 @@ header{
     border:none;
     cursor:pointer;
 }
+
 .blue{background:var(--accent);}
 .green{background:var(--green);}
 
@@ -149,6 +159,67 @@ header{
     display:flex;
     gap:5px;
     margin-top:5px;
+}
+
+.admin-actions button{
+    border:none;
+    padding:5px;
+    border-radius:6px;
+    cursor:pointer;
+    background:rgba(255,255,255,0.1);
+}
+
+/* 🔥 POPUP EDITOR */
+#editorPopup{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.8);
+    justify-content:center;
+    align-items:center;
+    z-index:999;
+}
+
+.editor-box{
+    background:#0f172a;
+    padding:20px;
+    border-radius:15px;
+    width:300px;
+    box-shadow:0 0 20px black;
+}
+
+.editor-box input{
+    width:100%;
+    padding:10px;
+    margin:6px 0;
+    border:none;
+    border-radius:8px;
+}
+
+.editor-actions{
+    display:flex;
+    gap:10px;
+    margin-top:10px;
+}
+
+.editor-save{
+    flex:1;
+    background:linear-gradient(135deg,#22c55e,#16a34a);
+    border:none;
+    padding:10px;
+    border-radius:10px;
+    color:white;
+    cursor:pointer;
+}
+
+.editor-cancel{
+    flex:1;
+    background:#334155;
+    border:none;
+    padding:10px;
+    border-radius:10px;
+    color:white;
+    cursor:pointer;
 }
 </style>
 </head>
@@ -163,23 +234,31 @@ header{
 </div>
 </header>
 
+<!-- LOGIN -->
 <div id="loginBox">
 <div class="login-content">
-<h3>Panel Admin</h3>
 <input id="user" placeholder="Email">
 <input id="pass" type="password" placeholder="Contraseña">
-<button onclick="login()">Entrar</button>
-<button onclick="cerrarLogin()">Cerrar</button>
+<button class="btn-login" onclick="login()">Entrar</button>
+<button class="btn-close" onclick="cerrarLogin()">Cerrar</button>
 </div>
 </div>
 
-<div id="adminPanel">
-<input id="nombre" placeholder="Nombre">
-<input id="img" placeholder="Imagen URL">
-<input id="desc" placeholder="Descripción">
-<input id="link1" placeholder="Link 1">
-<input id="link2" placeholder="Link 2">
-<button id="btnGuardar" onclick="agregarJuego()">Guardar</button>
+<!-- 🔥 EDITOR POPUP -->
+<div id="editorPopup">
+<div class="editor-box">
+<h3>Editar juego</h3>
+<input id="e_nombre">
+<input id="e_img">
+<input id="e_desc">
+<input id="e_link1">
+<input id="e_link2">
+
+<div class="editor-actions">
+<button class="editor-save" onclick="guardarEdicion()">Guardar</button>
+<button class="editor-cancel" onclick="cerrarEditor()">Cancelar</button>
+</div>
+</div>
 </div>
 
 <div class="store" id="store"></div>
@@ -190,19 +269,17 @@ function cerrarLogin(){loginBox.style.display="none";}
 
 let admin=false;
 let editIndex=null;
-let guardando=false;
-let cargando=false;
 </script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCnqFKUPqbcTt0As9atnSQML00ReFgcgbw",
-  authDomain: "luma-switch.firebaseapp.com",
-  projectId: "luma-switch",
+  apiKey: "TU_API",
+  authDomain: "TU_AUTH",
+  projectId: "TU_ID"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -211,7 +288,6 @@ const auth = getAuth(app);
 
 onAuthStateChanged(auth, (user) => {
   admin = !!user;
-  adminPanel.style.display = admin ? "block" : "none";
   logoutBtn.style.display = admin ? "inline-block" : "none";
   cargar();
 });
@@ -226,12 +302,7 @@ await signOut(auth);
 };
 
 window.cargar = async ()=>{
-
-if(cargando) return;
-cargando = true;
-
 const snapshot=await getDocs(collection(db,"juegos"));
-
 let html="";
 
 snapshot.forEach(docSnap=>{
@@ -246,21 +317,13 @@ html+=`
 <p>${j.desc}</p>
 
 <div class="btns">
-<button class="btn blue">Ver enlace</button>
-<button class="btn green">Ver enlace</button>
+<button class="btn blue">Descargar</button>
+<button class="btn green">Descargar</button>
 </div>
 
 ${admin?`
 <div class="admin-actions">
-<button onclick='editar(${JSON.stringify({
-  id: id,
-  nombre: j.nombre,
-  img: j.img,
-  desc: j.desc,
-  link1: j.link1,
-  link2: j.link2
-})})'>✏️</button>
-
+<button onclick="abrirEditor('${id}','${j.nombre}','${j.img}','${j.desc}','${j.link1}','${j.link2}')">✏️</button>
 <button onclick="eliminar('${id}')">🗑️</button>
 </div>`:""}
 
@@ -269,67 +332,34 @@ ${admin?`
 });
 
 store.innerHTML=html;
-cargando=false;
 };
 
-window.agregarJuego = async function(){
-
-if(guardando) return;
-guardando=true;
-btnGuardar.disabled=true;
-
-let nuevo={
-nombre:nombre.value,
-img:img.value,
-desc:desc.value,
-link1:link1.value,
-link2:link2.value
+/* 🔥 EDITOR FUNCIONAL */
+window.abrirEditor=(id,n,i,d,l1,l2)=>{
+editIndex=id;
+e_nombre.value=n;
+e_img.value=i;
+e_desc.value=d;
+e_link1.value=l1;
+e_link2.value=l2;
+editorPopup.style.display="flex";
 };
 
-try{
-
-const q=query(collection(db,"juegos"), where("nombre","==",nombre.value));
-const snap=await getDocs(q);
-
-if(!snap.empty && editIndex==null){
-alert("Este juego ya existe");
-guardando=false;
-btnGuardar.disabled=false;
-return;
-}
-
-if(editIndex==null){
-await addDoc(collection(db,"juegos"),nuevo);
-}else{
-await updateDoc(doc(db,"juegos",editIndex),nuevo);
+window.cerrarEditor=()=>{
+editorPopup.style.display="none";
 editIndex=null;
-}
-
-}catch(e){console.error(e);}
-
-/* reset visual */
-btnGuardar.innerText="Guardar";
-btnGuardar.classList.remove("editando");
-
-guardando=false;
-btnGuardar.disabled=false;
-cargar();
 };
 
-/* 🔥 NUEVO EDITAR SEGURO */
-window.editar=(j)=>{
-nombre.value = j.nombre;
-img.value = j.img;
-desc.value = j.desc;
-link1.value = j.link1;
-link2.value = j.link2;
-
-editIndex = j.id;
-
-btnGuardar.innerText="Actualizar juego";
-btnGuardar.classList.add("editando");
-
-adminPanel.scrollIntoView({behavior:"smooth"});
+window.guardarEdicion=async()=>{
+await updateDoc(doc(db,"juegos",editIndex),{
+nombre:e_nombre.value,
+img:e_img.value,
+desc:e_desc.value,
+link1:e_link1.value,
+link2:e_link2.value
+});
+cerrarEditor();
+cargar();
 };
 
 window.eliminar=async(id)=>{
