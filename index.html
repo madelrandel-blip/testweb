@@ -48,10 +48,14 @@ header{
 .header-btn button{
     padding:8px 14px;
     border:none;
-    border-radius:8px;
+    border-radius:10px;
     cursor:pointer;
-    background:linear-gradient(45deg,var(--accent),var(--accent2));
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
     color:white;
+    transition:0.25s;
+}
+.header-btn button:hover{
+    transform:scale(1.05);
 }
 
 /* animación */
@@ -63,27 +67,67 @@ header{
     to{opacity:1; transform:translateY(0);}
 }
 
-/* login */
+/* LOGIN */
 #loginBox{
     display:none;
     position:fixed;
     inset:0;
-    background:rgba(0,0,0,0.8);
+    background:rgba(0,0,0,0.85);
     justify-content:center;
     align-items:center;
 }
+
 .login-content{
     background:#0f172a;
     padding:25px;
-    border-radius:10px;
+    border-radius:15px;
     text-align:center;
+    width:280px;
+    box-shadow:0 0 20px rgba(0,0,0,0.6);
 }
+
+.login-content input{
+    width:90%;
+    padding:10px;
+    margin:8px 0;
+    border:none;
+    border-radius:8px;
+}
+
+/* BOTONES MODERNOS */
+.login-content button{
+    padding:10px 14px;
+    margin-top:10px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    color:white;
+    font-weight:bold;
+    transition:0.25s;
+}
+
+.btn-login{
+    background:linear-gradient(135deg,#38bdf8,#6366f1);
+}
+.btn-login:hover{transform:scale(1.05);}
+
+.btn-close{
+    background:rgba(255,255,255,0.1);
+}
+.btn-close:hover{background:rgba(255,255,255,0.2);}
 
 /* panel */
 #adminPanel{
     display:none;
     background:rgba(10,15,30,0.8);
     padding:20px;
+}
+
+#adminPanel input{
+    padding:8px;
+    margin:5px;
+    border-radius:5px;
+    border:none;
 }
 
 /* grid */
@@ -165,9 +209,12 @@ header{
 <!-- LOGIN -->
 <div id="loginBox">
 <div class="login-content">
+<h3>Panel Admin</h3>
 <input id="user" placeholder="Email">
 <input id="pass" type="password" placeholder="Contraseña">
-<button onclick="login()">Entrar</button>
+
+<button class="btn-login" onclick="login()">Entrar</button>
+<button class="btn-close" onclick="cerrarLogin()">Cerrar</button>
 </div>
 </div>
 
@@ -193,10 +240,11 @@ s.style.left=Math.random()*100+"%";
 stars.appendChild(s);
 }
 
-let admin=false, editIndex=null;
-
-// abrir login
+// abrir/cerrar login
 function abrirLogin(){loginBox.style.display="flex";}
+function cerrarLogin(){loginBox.style.display="none";}
+
+let admin=false, editIndex=null;
 </script>
 
 <!-- FIREBASE -->
@@ -205,7 +253,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-/* 🔥 CONFIG */
+/* CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyCnqFKUPqbcTt0As9atnSQML00ReFgcgbw",
   authDomain: "luma-switch.firebaseapp.com",
@@ -216,7 +264,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-/* 🔐 ESTADO LOGIN */
+/* estado login */
 onAuthStateChanged(auth, (user) => {
   if(user){
     admin = true;
@@ -230,17 +278,17 @@ onAuthStateChanged(auth, (user) => {
   cargar();
 });
 
-/* LOGIN */
+/* login real */
 window.login = async function(){
 try{
 await signInWithEmailAndPassword(auth, user.value, pass.value);
-loginBox.style.display="none";
+cerrarLogin();
 }catch(e){
 alert("Error: " + e.message);
 }
 };
 
-/* LOGOUT */
+/* logout */
 window.logout = async function(){
 await signOut(auth);
 };
