@@ -84,7 +84,7 @@ header{
     border:none;
 }
 
-/* 🔥 MODO EDICIÓN VISUAL */
+/* modo edición */
 #btnGuardar.editando{
     background:linear-gradient(135deg,#f59e0b,#d97706);
 }
@@ -252,7 +252,15 @@ html+=`
 
 ${admin?`
 <div class="admin-actions">
-<button onclick="editar('${id}','${j.nombre}','${j.img}','${j.desc}','${j.link1}','${j.link2}')">✏️</button>
+<button onclick='editar(${JSON.stringify({
+  id: id,
+  nombre: j.nombre,
+  img: j.img,
+  desc: j.desc,
+  link1: j.link1,
+  link2: j.link2
+})})'>✏️</button>
+
 <button onclick="eliminar('${id}')">🗑️</button>
 </div>`:""}
 
@@ -299,7 +307,7 @@ editIndex=null;
 
 }catch(e){console.error(e);}
 
-/* 🔥 RESET VISUAL */
+/* reset visual */
 btnGuardar.innerText="Guardar";
 btnGuardar.classList.remove("editando");
 
@@ -308,19 +316,19 @@ btnGuardar.disabled=false;
 cargar();
 };
 
-window.editar=(id,n,i,d,l1,l2)=>{
-nombre.value=n;
-img.value=i;
-desc.value=d;
-link1.value=l1;
-link2.value=l2;
-editIndex=id;
+/* 🔥 NUEVO EDITAR SEGURO */
+window.editar=(j)=>{
+nombre.value = j.nombre;
+img.value = j.img;
+desc.value = j.desc;
+link1.value = j.link1;
+link2.value = j.link2;
 
-/* 🔥 ACTIVAR MODO EDICIÓN */
+editIndex = j.id;
+
 btnGuardar.innerText="Actualizar juego";
 btnGuardar.classList.add("editando");
 
-/* 🔥 SCROLL */
 adminPanel.scrollIntoView({behavior:"smooth"});
 };
 
