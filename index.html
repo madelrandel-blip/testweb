@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Luma Switch</title>
 
 <style>
@@ -157,7 +156,6 @@ header{
 
 <header>
 <h1>🌌 Luma Switch</h1>
-
 <div class="header-btn">
 <button onclick="abrirLogin()">🔐 Admin</button>
 <button onclick="logout()" id="logoutBtn" style="display:none;">🚪 Salir</button>
@@ -167,7 +165,7 @@ header{
 <!-- LOGIN -->
 <div id="loginBox">
 <div class="login-content">
-<input id="user" placeholder="Usuario">
+<input id="user" placeholder="Email">
 <input id="pass" type="password" placeholder="Contraseña">
 <button onclick="login()">Entrar</button>
 </div>
@@ -195,27 +193,62 @@ s.style.left=Math.random()*100+"%";
 stars.appendChild(s);
 }
 
-    
+let admin=false, editIndex=null;
+
+// abrir login
+function abrirLogin(){loginBox.style.display="flex";}
+</script>
+
 <!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-/* 🔥 PEGA TU CONFIG */
+/* 🔥 CONFIG */
 const firebaseConfig = {
-  apiKey: "AIzaSyCnqFKUPqbcTt0As9atnSQML00ReFgcgbw",
-  authDomain: "luma-switch.firebaseapp.com",
-  projectId: "luma-switch",
+  apiKey: "AQUI",
+  authDomain: "AQUI",
+  projectId: "AQUI",
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
-/* funciones */
+/* 🔐 ESTADO LOGIN */
+onAuthStateChanged(auth, (user) => {
+  if(user){
+    admin = true;
+    adminPanel.style.display = "block";
+    logoutBtn.style.display = "inline-block";
+  }else{
+    admin = false;
+    adminPanel.style.display = "none";
+    logoutBtn.style.display = "none";
+  }
+  cargar();
+});
+
+/* LOGIN */
+window.login = async function(){
+try{
+await signInWithEmailAndPassword(auth, user.value, pass.value);
+loginBox.style.display="none";
+}catch(e){
+alert("Error: " + e.message);
+}
+};
+
+/* LOGOUT */
+window.logout = async function(){
+await signOut(auth);
+};
+
+/* CRUD */
 
 window.cargar = async function(){
 store.innerHTML = "";
-
 const querySnapshot = await getDocs(collection(db, "juegos"));
 
 querySnapshot.forEach((docSnap)=>{
@@ -260,7 +293,6 @@ await addDoc(collection(db, "juegos"), nuevo);
 await updateDoc(doc(db,"juegos",editIndex), nuevo);
 editIndex = null;
 }
-
 cargar();
 };
 
