@@ -41,6 +41,19 @@ header{
     align-items:center;
     position:relative;
     z-index:1;
+    gap:15px;
+}
+
+/* BUSCADOR */
+#buscador{
+    padding:8px 12px;
+    border-radius:10px;
+    border:none;
+    outline:none;
+    background:#020617;
+    color:white;
+    border:1px solid rgba(255,255,255,0.1);
+    width:200px;
 }
 
 .header-btn{
@@ -224,6 +237,9 @@ header{
 
 <header>
 <h1>🌌 Luma Switch</h1>
+
+<input type="text" id="buscador" placeholder="Buscar...">
+
 <div class="header-btn">
 <button onclick="abrirLogin()">🔐 Admin</button>
 <button onclick="logout()" id="logoutBtn" style="display:none;">🚪 Salir</button>
@@ -403,7 +419,6 @@ cargar();
 };
 </script>
 
-<!-- ESTRELLAS OPTIMIZADAS -->
 <script>
 const canvas = document.getElementById("stars");
 const ctx = canvas.getContext("2d");
