@@ -54,12 +54,6 @@ header{
 }
 .header-btn button:hover{transform:scale(1.05);}
 
-.fade{animation:fadeIn 0.35s ease;}
-@keyframes fadeIn{
-    from{opacity:0; transform:translateY(10px);}
-    to{opacity:1; transform:translateY(0);}
-}
-
 /* LOGIN */
 #loginBox{
     display:none;
@@ -76,7 +70,6 @@ header{
     border-radius:15px;
     text-align:center;
     width:280px;
-    box-shadow:0 0 20px rgba(0,0,0,0.6);
 }
 
 .login-content input{
@@ -88,41 +81,17 @@ header{
 }
 
 .login-content button{
-    padding:10px 14px;
+    padding:10px;
     margin-top:10px;
     border:none;
     border-radius:10px;
     cursor:pointer;
     color:white;
-    font-weight:bold;
-    transition:0.25s;
 }
 
-.btn-login{
-    background:linear-gradient(135deg,#38bdf8,#6366f1);
-}
-.btn-login:hover{transform:scale(1.05);}
+.btn-login{background:linear-gradient(135deg,#38bdf8,#6366f1);}
+.btn-close{background:rgba(255,255,255,0.1);}
 
-.btn-close{
-    background:rgba(255,255,255,0.1);
-}
-.btn-close:hover{background:rgba(255,255,255,0.2);}
-
-/* panel */
-#adminPanel{
-    display:none;
-    background:rgba(10,15,30,0.8);
-    padding:20px;
-}
-
-#adminPanel input{
-    padding:8px;
-    margin:5px;
-    border-radius:5px;
-    border:none;
-}
-
-/* grid */
 .store{
     display:grid;
     grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
@@ -130,38 +99,25 @@ header{
     padding:20px;
 }
 
-/* card */
 .card{
     background:rgba(15,23,42,0.8);
     border-radius:10px;
     overflow:hidden;
-    transition:0.3s;
     display:flex;
     flex-direction:column;
 }
-.card:hover{transform:scale(1.05);}
 .card img{width:100%;}
 
 .content{
     padding:10px;
     display:flex;
     flex-direction:column;
-    flex:1;
 }
-.content h3{font-size:14px;margin:5px 0;}
-.content p{font-size:12px;color:#9aa7b1;}
 
 .btns{
     display:flex;
     gap:6px;
     margin-top:auto;
-    opacity:0;
-    transform:translateY(10px);
-    transition:0.3s;
-}
-.card:hover .btns{
-    opacity:1;
-    transform:translateY(0);
 }
 
 .btn{
@@ -170,23 +126,16 @@ header{
     text-align:center;
     font-size:12px;
     border-radius:5px;
-    text-decoration:none;
     color:white;
+    border:none;
+    cursor:pointer;
 }
 .blue{background:var(--accent);}
 .green{background:var(--green);}
-
-.admin-actions{
-    display:flex;
-    gap:5px;
-    margin-top:5px;
-}
 </style>
 </head>
 
 <body>
-
-<div class="stars" id="stars"></div>
 
 <header>
 <h1>🌌 Luma Switch</h1>
@@ -199,64 +148,35 @@ header{
 <!-- LOGIN -->
 <div id="loginBox">
 <div class="login-content">
-<h3>Panel Admin</h3>
+<h3>Admin</h3>
 <input id="user" placeholder="Email">
 <input id="pass" type="password" placeholder="Contraseña">
-
 <button class="btn-login" onclick="login()">Entrar</button>
 <button class="btn-close" onclick="cerrarLogin()">Cerrar</button>
 </div>
 </div>
 
-<!-- MODAL SEGURO -->
-<div id="safeModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); justify-content:center; align-items:center; z-index:999;">
-  <div style="background:#0f172a; padding:20px; border-radius:12px; width:300px; text-align:center;">
-    <h3>⚠️ Enlace externo</h3>
-    <p>Este contenido está fuera del sitio</p>
-    <a id="safeLink" href="#" target="_blank" class="btn blue">Abrir enlace</a>
-    <br><br>
-    <button onclick="cerrarSafe()" class="btn green">Cerrar</button>
-  </div>
-</div>
-
 <!-- PANEL -->
-<div id="adminPanel">
+<div id="adminPanel" style="display:none;">
 <input id="nombre" placeholder="Nombre">
 <input id="img" placeholder="Imagen URL">
 <input id="desc" placeholder="Descripción">
 <input id="link1" placeholder="Link 1">
 <input id="link2" placeholder="Link 2">
-<button onclick="agregarJuego()">Guardar</button>
+<button id="btnGuardar" onclick="agregarJuego()">Guardar</button>
 </div>
 
-<div class="store fade" id="store"></div>
+<div class="store" id="store"></div>
 
 <script>
-// estrellas
-for(let i=0;i<120;i++){
-let s=document.createElement("div");
-s.className="star";
-s.style.top=Math.random()*100+"%";
-s.style.left=Math.random()*100+"%";
-stars.appendChild(s);
-}
-
 function abrirLogin(){loginBox.style.display="flex";}
 function cerrarLogin(){loginBox.style.display="none";}
-
-// modal seguro
-function abrirSafe(url){
-  safeModal.style.display="flex";
-  safeLink.href=url;
-}
-function cerrarSafe(){
-  safeModal.style.display="none";
-}
-
 let admin=false, editIndex=null;
+
+/* 🔒 BLOQUEO ANTI DUPLICADOS */
+let guardando = false;
 </script>
 
-<!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -286,12 +206,8 @@ onAuthStateChanged(auth, (user) => {
 });
 
 window.login = async function(){
-try{
 await signInWithEmailAndPassword(auth, user.value, pass.value);
 cerrarLogin();
-}catch(e){
-alert("Error: " + e.message);
-}
 };
 
 window.logout = async function(){
@@ -314,22 +230,22 @@ store.innerHTML += `
 <p>${j.desc}</p>
 
 <div class="btns">
-<button onclick="abrirSafe('${j.link1}')" class="btn blue">Ver enlace</button>
-<button onclick="abrirSafe('${j.link2}')" class="btn green">Ver enlace</button>
+<button onclick="abrirSafe('${j.link1}')" class="btn blue">Ver</button>
+<button onclick="abrirSafe('${j.link2}')" class="btn green">Ver</button>
 </div>
-
-${admin?`
-<div class="admin-actions">
-<button onclick="editar('${id}','${j.nombre}','${j.img}','${j.desc}','${j.link1}','${j.link2}')">✏️</button>
-<button onclick="eliminar('${id}')">🗑️</button>
-</div>`:""}
 
 </div>
 </div>`;
 });
 };
 
+/* 🔥 FUNCIÓN CORREGIDA */
 window.agregarJuego = async function(){
+
+if(guardando) return;
+guardando = true;
+btnGuardar.disabled = true;
+
 let nuevo = {
 nombre:nombre.value,
 img:img.value,
@@ -338,26 +254,20 @@ link1:link1.value,
 link2:link2.value
 };
 
+try{
 if(editIndex == null){
 await addDoc(collection(db, "juegos"), nuevo);
 }else{
 await updateDoc(doc(db,"juegos",editIndex), nuevo);
 editIndex = null;
 }
-cargar();
-};
+}catch(e){
+console.error(e);
+alert("Error al guardar");
+}
 
-window.editar = function(id,n,i,d,l1,l2){
-nombre.value=n;
-img.value=i;
-desc.value=d;
-link1.value=l1;
-link2.value=l2;
-editIndex=id;
-};
-
-window.eliminar = async function(id){
-await deleteDoc(doc(db,"juegos",id));
+guardando = false;
+btnGuardar.disabled = false;
 cargar();
 };
 
