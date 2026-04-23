@@ -25,6 +25,7 @@ body{
                 var(--bg);
 }
 
+/* estrellas */
 #stars{
     position:fixed;
     inset:0;
@@ -39,31 +40,29 @@ header{
     padding:15px;
     display:flex;
     align-items:center;
+    gap:15px;
     position:relative;
     z-index:1;
-    gap:15px;
 }
 
-/* 🔧 FIX LOGO */
 .logo h1{
     display:flex;
     align-items:center;
     gap:10px;
-    font-size:20px;
     margin:0;
+    font-size:20px;
 }
 
 .logo-img{
-    height:28px;
+    height:24px;
     width:auto;
-    object-fit:contain;
 }
 
+/* buscador */
 #buscador{
     padding:8px 12px;
     border-radius:10px;
     border:none;
-    outline:none;
     background:#020617;
     color:white;
     border:1px solid rgba(255,255,255,0.1);
@@ -83,11 +82,6 @@ header{
     cursor:pointer;
     background:linear-gradient(135deg,var(--accent),var(--accent2));
     color:white;
-    transition:0.25s;
-}
-.header-btn button:hover{
-    transform:scale(1.08);
-    box-shadow:0 0 10px var(--accent);
 }
 
 /* LOGIN */
@@ -103,14 +97,10 @@ header{
 }
 
 .login-content{
-    background:rgba(15,23,42,0.75);
-    border:1px solid rgba(125,211,252,0.2);
-    backdrop-filter: blur(14px);
-    padding:30px 25px;
-    border-radius:20px;
-    width:300px;
-    box-shadow:0 0 25px rgba(125,211,252,0.15);
-    animation:fadeIn 0.4s ease;
+    background:rgba(15,23,42,0.9);
+    padding:25px;
+    border-radius:15px;
+    width:280px;
     text-align:center;
 }
 
@@ -120,42 +110,29 @@ header{
     margin:8px 0;
     border-radius:10px;
     border:none;
-    outline:none;
     background:#020617;
     color:white;
-    border:1px solid rgba(255,255,255,0.08);
 }
 
 .login-content button{
     width:100%;
     padding:10px;
-    margin-top:10px;
+    margin-top:8px;
     border:none;
     border-radius:10px;
-    cursor:pointer;
     background:linear-gradient(135deg,var(--accent),var(--accent2));
     color:white;
-}
-
-@keyframes fadeIn{
-    from{opacity:0; transform:translateY(10px);}
-    to{opacity:1; transform:translateY(0);}
 }
 
 /* PANEL */
 #adminPanel{
     display:none;
-    background:rgba(10,15,30,0.8);
-    padding:20px;
-    position:relative;
-    z-index:1;
+    padding:15px;
 }
 
 #adminPanel input{
-    padding:8px;
     margin:5px;
-    border-radius:5px;
-    border:none;
+    padding:8px;
 }
 
 /* GRID */
@@ -164,25 +141,20 @@ header{
     grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
     gap:18px;
     padding:20px;
-    position:relative;
-    z-index:1;
 }
 
 /* CARD */
 .card{
-    background:rgba(15,23,42,0.8);
+    background:rgba(15,23,42,0.9);
     border-radius:10px;
     overflow:hidden;
     transition:0.3s;
-    display:flex;
-    flex-direction:column;
     position:relative;
 }
 .card:hover{transform:scale(1.05);}
 
 .card img{width:100%;}
 
-/* BADGE */
 .badge{
     position:absolute;
     top:6px;
@@ -191,40 +163,25 @@ header{
     color:black;
     padding:3px 6px;
     font-size:10px;
-    border-radius:6px;
-    font-weight:bold;
+    border-radius:5px;
 }
 
 .content{
     padding:10px;
-    display:flex;
-    flex-direction:column;
-    flex:1;
 }
-
-.content h3{font-size:14px;margin:5px 0;}
-.content p{font-size:12px;color:#9aa7b1;}
 
 .btns{
     display:flex;
-    gap:6px;
-    margin-top:auto;
-    opacity:0;
-    transform:translateY(10px);
-    transition:0.3s;
-}
-.card:hover .btns{
-    opacity:1;
-    transform:translateY(0);
+    gap:5px;
+    margin-top:10px;
 }
 
 .btn{
     flex:1;
-    padding:7px;
-    font-size:12px;
+    padding:6px;
+    border:none;
     border-radius:5px;
     color:white;
-    border:none;
     cursor:pointer;
 }
 .blue{background:var(--accent);}
@@ -245,15 +202,13 @@ header{
 
 <header>
 <div class="logo">
-  <h1>
-    <img src="https://media.discordapp.net/attachments/1419649387948150826/1496590717789933568/Luma..webp?format=png"
-    alt="Luma Logo"
-    class="logo-img">
-    Luma Switch
-  </h1>
+<h1>
+<img src="https://media.discordapp.net/attachments/1419649387948150826/1496590717789933568/Luma..webp?format=png" class="logo-img">
+Luma Switch
+</h1>
 </div>
 
-<input type="text" id="buscador" placeholder="Buscar...">
+<input id="buscador" placeholder="Buscar...">
 
 <div class="header-btn">
 <button onclick="abrirLogin()">🔐 Admin</button>
@@ -261,7 +216,165 @@ header{
 </div>
 </header>
 
-<!-- TODO LO DEMÁS SE MANTIENE EXACTAMENTE IGUAL -->
+<div id="loginBox">
+<div class="login-content">
+<h3>Admin</h3>
+<input id="user" placeholder="Email">
+<input id="pass" type="password" placeholder="Contraseña">
+<button onclick="login()">Entrar</button>
+<button onclick="cerrarLogin()">Cerrar</button>
+</div>
+</div>
+
+<div id="adminPanel">
+<input id="nombre" placeholder="Nombre">
+<input id="img" placeholder="Imagen">
+<input id="desc" placeholder="Descripción">
+<input id="link1" placeholder="Link 1">
+<input id="link2" placeholder="Link 2">
+<button onclick="agregarJuego()">Guardar</button>
+</div>
+
+<div class="store" id="store"></div>
+
+<script>
+function abrirLogin(){loginBox.style.display="flex";}
+function cerrarLogin(){loginBox.style.display="none";}
+
+let juegosData=[];
+let admin=false;
+
+/* buscador */
+buscador.addEventListener("input",()=>{
+let t=buscador.value.toLowerCase();
+render(juegosData.filter(j=>
+(j.nombre||"").toLowerCase().includes(t)||
+(j.desc||"").toLowerCase().includes(t)
+));
+});
+
+/* render */
+function render(lista){
+let html="";
+lista.forEach(j=>{
+html+=`
+<div class="card">
+${j.destacado?'<div class="badge">⭐</div>':''}
+<img src="${j.img}">
+<div class="content">
+<h3>${j.nombre}</h3>
+<p>${j.desc}</p>
+
+<div class="btns">
+<button class="btn blue" onclick="window.open('${j.link1}')">Link</button>
+<button class="btn green" onclick="window.open('${j.link2}')">Link</button>
+</div>
+
+${admin?`
+<div class="admin-actions">
+<button onclick="eliminar('${j.id}')">🗑️</button>
+<button onclick="toggleDestacado('${j.id}', ${j.destacado?true:false})">⭐</button>
+</div>`:""}
+
+</div>
+</div>`;
+});
+store.innerHTML=html;
+}
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const app=initializeApp({
+apiKey:"AIzaSyCnqFKUPqbcTt0As9atnSQML00ReFgcgbw",
+authDomain:"luma-switch.firebaseapp.com",
+projectId:"luma-switch"
+});
+
+const db=getFirestore(app);
+const auth=getAuth(app);
+
+onAuthStateChanged(auth,u=>{
+admin=!!u;
+adminPanel.style.display=admin?"block":"none";
+logoutBtn.style.display=admin?"inline-block":"none";
+cargar();
+});
+
+window.login=()=>signInWithEmailAndPassword(auth,user.value,pass.value).then(cerrarLogin);
+window.logout=()=>signOut(auth);
+
+window.cargar=async()=>{
+const snap=await getDocs(collection(db,"juegos"));
+juegosData=[];
+snap.forEach(d=>{
+let j=d.data();
+j.id=d.id;
+juegosData.push(j);
+});
+
+/* orden */
+juegosData.sort((a,b)=>{
+if((b.destacado?1:0)!==(a.destacado?1:0)){
+return (b.destacado?1:0)-(a.destacado?1:0);
+}
+return (a.nombre||"").localeCompare(b.nombre||"",'es',{sensitivity:'base'});
+});
+
+render(juegosData);
+};
+
+window.agregarJuego=async()=>{
+let nuevo={
+nombre:nombre.value,
+img:img.value,
+desc:desc.value,
+link1:link1.value,
+link2:link2.value,
+destacado:false
+};
+await addDoc(collection(db,"juegos"),nuevo);
+cargar();
+};
+
+window.eliminar=id=>deleteDoc(doc(db,"juegos",id)).then(cargar);
+
+window.toggleDestacado=(id,estado)=>{
+updateDoc(doc(db,"juegos",id),{destacado:!estado}).then(cargar);
+};
+</script>
+
+<script>
+const c=document.getElementById("stars");
+const ctx=c.getContext("2d");
+
+function resize(){c.width=innerWidth;c.height=innerHeight;}
+resize();addEventListener("resize",resize);
+
+let stars=Array.from({length:80},()=>({
+x:Math.random()*c.width,
+y:Math.random()*c.height,
+r:Math.random()*1.2,
+s:Math.random()*0.3+0.05
+}));
+
+function draw(){
+ctx.clearRect(0,0,c.width,c.height);
+ctx.fillStyle="white";
+stars.forEach(st=>{
+ctx.beginPath();
+ctx.arc(st.x,st.y,st.r,0,Math.PI*2);
+ctx.fill();
+st.y+=st.s;
+if(st.y>c.height){st.y=0;st.x=Math.random()*c.width;}
+});
+requestAnimationFrame(draw);
+}
+draw();
+</script>
 
 </body>
 </html>
