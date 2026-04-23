@@ -32,6 +32,7 @@ body{
     pointer-events:none;
 }
 
+/* HEADER */
 header{
     background:rgba(10,15,30,0.7);
     backdrop-filter: blur(10px);
@@ -74,6 +75,7 @@ header{
     box-shadow:0 0 10px var(--accent);
 }
 
+/* LOGIN */
 #loginBox{
     display:none;
     position:fixed;
@@ -93,6 +95,7 @@ header{
     border-radius:20px;
     width:300px;
     box-shadow:0 0 25px rgba(125,211,252,0.15);
+    animation:fadeIn 0.4s ease;
     text-align:center;
 }
 
@@ -119,6 +122,12 @@ header{
     color:white;
 }
 
+@keyframes fadeIn{
+    from{opacity:0; transform:translateY(10px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+/* PANEL */
 #adminPanel{
     display:none;
     background:rgba(10,15,30,0.8);
@@ -127,6 +136,14 @@ header{
     z-index:1;
 }
 
+#adminPanel input{
+    padding:8px;
+    margin:5px;
+    border-radius:5px;
+    border:none;
+}
+
+/* GRID */
 .store{
     display:grid;
     grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
@@ -136,6 +153,7 @@ header{
     z-index:1;
 }
 
+/* CARD */
 .card{
     background:rgba(15,23,42,0.8);
     border-radius:10px;
@@ -149,15 +167,17 @@ header{
 
 .card img{width:100%;}
 
+/* BADGE */
 .badge{
     position:absolute;
-    top:5px;
-    left:5px;
+    top:6px;
+    left:6px;
     background:gold;
     color:black;
     padding:3px 6px;
     font-size:10px;
-    border-radius:5px;
+    border-radius:6px;
+    font-weight:bold;
 }
 
 .content{
@@ -166,6 +186,9 @@ header{
     flex-direction:column;
     flex:1;
 }
+
+.content h3{font-size:14px;margin:5px 0;}
+.content p{font-size:12px;color:#9aa7b1;}
 
 .btns{
     display:flex;
@@ -191,6 +214,12 @@ header{
 }
 .blue{background:var(--accent);}
 .green{background:var(--green);}
+
+.admin-actions{
+    display:flex;
+    gap:5px;
+    margin-top:5px;
+}
 </style>
 
 </head>
@@ -208,6 +237,8 @@ header{
 </div>
 </header>
 
+<!-- LOGIN -->
+
 <div id="loginBox">
 <div class="login-content">
 <h3>Panel Admin</h3>
@@ -218,6 +249,8 @@ header{
 </div>
 </div>
 
+<!-- PANEL -->
+
 <div id="adminPanel">
 <input id="nombre" placeholder="Nombre">
 <input id="img" placeholder="Imagen URL">
@@ -227,32 +260,46 @@ header{
 <button id="btnGuardar" onclick="agregarJuego()">Guardar</button>
 </div>
 
+<!-- TIENDA -->
+
 <div class="store" id="store"></div>
 
 <script>
-let juegosData = [];
+function abrirLogin(){loginBox.style.display="flex";}
+function cerrarLogin(){loginBox.style.display="none";}
+
+let admin=false;
+let editIndex=null;
+let guardando=false;
+let cargando=false;
+
+let juegosData=[];
+
+/* BUSCADOR */
 buscador.addEventListener("input", ()=>{
-    const texto = buscador.value.toLowerCase();
+    const texto=buscador.value.toLowerCase();
     render(juegosData.filter(j =>
-        j.nombre.toLowerCase().includes(texto) ||
-        j.desc.toLowerCase().includes(texto)
+        (j.nombre||"").toLowerCase().includes(texto) ||
+        (j.desc||"").toLowerCase().includes(texto)
     ));
 });
 
+/* RENDER */
 function render(lista){
     let html="";
     lista.forEach(j=>{
         html+=`
         <div class="card">
         ${j.destacado ? '<div class="badge">⭐ Destacado</div>' : ''}
+
         <img src="${j.img}">
         <div class="content">
         <h3>${j.nombre}</h3>
         <p>${j.desc}</p>
 
         <div class="btns">
-        <button class="btn blue">Ver enlace</button>
-        <button class="btn green">Ver enlace</button>
+        <button class="btn blue" onclick="window.open('${j.link1}','_blank')">Ver enlace</button>
+        <button class="btn green" onclick="window.open('${j.link2}','_blank')">Ver enlace</button>
         </div>
 
         ${admin?`
@@ -264,7 +311,7 @@ function render(lista){
         </div>
         </div>`;
     });
-    store.innerHTML = html;
+    store.innerHTML=html;
 }
 </script>
 
@@ -274,40 +321,40 @@ import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc, q
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const app = initializeApp({
-  apiKey: "AIza...",
+  apiKey: "AIzaSyCnqFKUPqbcTt0As9atnSQML00ReFgcgbw",
   authDomain: "luma-switch.firebaseapp.com",
   projectId: "luma-switch",
 });
 
-const db = getFirestore(app);
-const auth = getAuth(app);
+const db=getFirestore(app);
+const auth=getAuth(app);
 
-let admin=false;
-
-onAuthStateChanged(auth, (user)=>{
+/* AUTH */
+onAuthStateChanged(auth,(user)=>{
     admin=!!user;
-    adminPanel.style.display = admin?"block":"none";
-    logoutBtn.style.display = admin?"inline-block":"none";
+    adminPanel.style.display=admin?"block":"none";
+    logoutBtn.style.display=admin?"inline-block":"none";
     cargar();
 });
 
-window.toggleDestacado = async (id, estado)=>{
-await updateDoc(doc(db,"juegos",id),{
-    destacado: !estado
-});
-cargar();
-};
+window.login=async()=>{await signInWithEmailAndPassword(auth,user.value,pass.value); cerrarLogin();}
+window.logout=async()=>{await signOut(auth);}
 
-window.cargar = async ()=>{
-const snapshot=await getDocs(collection(db,"juegos"));
+/* CARGAR */
+window.cargar=async()=>{
+if(cargando) return;
+cargando=true;
+
+const snap=await getDocs(collection(db,"juegos"));
 juegosData=[];
-snapshot.forEach(d=>{
+
+snap.forEach(d=>{
 let j=d.data();
 j.id=d.id;
 juegosData.push(j);
 });
 
-// ⭐ ORDEN DESTACADOS + ALFABÉTICO
+/* ⭐ ORDEN DESTACADOS + ALFABÉTICO */
 juegosData.sort((a,b)=>{
 if((b.destacado?1:0)!==(a.destacado?1:0)){
 return (b.destacado?1:0)-(a.destacado?1:0);
@@ -316,19 +363,95 @@ return (a.nombre||"").localeCompare(b.nombre||"",'es',{sensitivity:'base'});
 });
 
 render(juegosData);
+cargando=false;
 };
 
-window.agregarJuego = async ()=>{
-await addDoc(collection(db,"juegos"),{
+/* AGREGAR / EDITAR */
+window.agregarJuego=async()=>{
+if(guardando) return;
+guardando=true;
+
+let nuevo={
 nombre:nombre.value,
 img:img.value,
 desc:desc.value,
 link1:link1.value,
 link2:link2.value,
 destacado:false
+};
+
+const q=query(collection(db,"juegos"), where("nombre","==",nombre.value));
+const existe=await getDocs(q);
+
+if(!existe.empty && !editIndex){
+alert("Este juego ya existe");
+guardando=false;
+return;
+}
+
+if(!editIndex){
+await addDoc(collection(db,"juegos"),nuevo);
+}else{
+await updateDoc(doc(db,"juegos",editIndex),nuevo);
+editIndex=null;
+}
+
+guardando=false;
+cargar();
+};
+
+/* ELIMINAR */
+window.eliminar=async(id)=>{
+await deleteDoc(doc(db,"juegos",id));
+cargar();
+};
+
+/* ⭐ TOGGLE DESTACADO */
+window.toggleDestacado=async(id,estado)=>{
+await updateDoc(doc(db,"juegos",id),{
+destacado:!estado
 });
 cargar();
 };
+</script>
+
+<script>
+const canvas=document.getElementById("stars");
+const ctx=canvas.getContext("2d");
+
+let stars=[];
+function resize(){
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+}
+resize();
+window.addEventListener("resize",resize);
+
+for(let i=0;i<80;i++){
+stars.push({
+x:Math.random()*canvas.width,
+y:Math.random()*canvas.height,
+r:Math.random()*1.2,
+s:Math.random()*0.3+0.05
+});
+}
+
+function draw(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+ctx.fillStyle="white";
+stars.forEach(st=>{
+ctx.beginPath();
+ctx.arc(st.x,st.y,st.r,0,Math.PI*2);
+ctx.fill();
+st.y+=st.s;
+if(st.y>canvas.height){
+st.y=0;
+st.x=Math.random()*canvas.width;
+}
+});
+requestAnimationFrame(draw);
+}
+draw();
 </script>
 
 </body>
