@@ -353,15 +353,20 @@ window.cargar = async ()=>{
 if(cargando) return;
 cargando = true;
 
-const snapshot=await getDocs(collection(db,"juegos"));
+const snapshot = await getDocs(collection(db,"juegos"));
 
 juegosData = [];
 
 snapshot.forEach(docSnap=>{
-const j=docSnap.data();
-j.id = docSnap.id;
-juegosData.push(j);
+    const j = docSnap.data();
+    j.id = docSnap.id;
+    juegosData.push(j);
 });
+
+paginaActual = 1;
+render(juegosFiltrados());
+
+cargando = false;
 
 /* 🔎 usa render */
 render(juegosData);
