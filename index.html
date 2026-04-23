@@ -301,23 +301,8 @@ function render(lista){
         <p>${j.desc}</p>
 
 <div class="btns">
-
-<a href="${j.link1 || '#'}"
-   target="_blank"
-   rel="noopener noreferrer"
-   class="btn blue"
-   style="${!j.link1 ? 'opacity:0.5;pointer-events:none;' : ''}"
-   Ver Enlace
-</a>
-
-<a href="${j.link2 || '#'}"
-   target="_blank"
-   rel="noopener noreferrer"
-   class="btn green"
-   style="${!j.link2 ? 'opacity:0.5;pointer-events:none;' : ''}"
-   Ver Enlace
-</a>
-
+<a href="${!j.link1}" target="_blank" class="btn blue">Link 1</a>
+<a href="${!j.link2}" target="_blank" class="btn green">Link 2</a>
 </div>
 
         ${admin?`
