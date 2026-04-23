@@ -24,22 +24,36 @@ body{
                 var(--bg);
 }
 
-/* HEADER ORIGINAL */
+/* CANVAS ESTRELLAS */
+#stars{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+}
+
+/* HEADER */
 header{
     background:rgba(10,15,30,0.7);
     backdrop-filter: blur(10px);
     padding:15px;
     display:flex;
     align-items:center;
+    position:relative;
+    z-index:1;
     gap:15px;
 }
 
+/* BUSCADOR */
 #buscador{
     padding:8px 12px;
     border-radius:10px;
     border:none;
+    outline:none;
     background:#020617;
     color:white;
+    border:1px solid rgba(255,255,255,0.1);
+    width:200px;
 }
 
 .header-btn{
@@ -55,6 +69,100 @@ header{
     cursor:pointer;
     background:linear-gradient(135deg,var(--accent),var(--accent2));
     color:white;
+    transition:0.25s;
+}
+.header-btn button:hover{
+    transform:scale(1.08);
+    box-shadow:0 0 10px var(--accent);
+}
+
+/* LOGIN MODERNO */
+#loginBox{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.6);
+    backdrop-filter: blur(6px);
+    justify-content:center;
+    align-items:center;
+    z-index:10;
+}
+
+.login-content{
+    background:rgba(15,23,42,0.75);
+    border:1px solid rgba(125,211,252,0.2);
+    backdrop-filter: blur(14px);
+    padding:30px 25px;
+    border-radius:20px;
+    width:300px;
+    box-shadow:0 0 25px rgba(125,211,252,0.15);
+    animation:fadeIn 0.4s ease;
+    text-align:center;
+}
+
+.login-content h3{
+    margin-bottom:15px;
+    font-weight:600;
+}
+
+.login-content input{
+    width:100%;
+    padding:10px;
+    margin:8px 0;
+    border-radius:10px;
+    border:none;
+    outline:none;
+    background:#020617;
+    color:white;
+    border:1px solid rgba(255,255,255,0.08);
+    transition:0.25s;
+}
+
+.login-content input:focus{
+    border:1px solid var(--accent);
+    box-shadow:0 0 10px var(--accent);
+}
+
+.login-content button{
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:white;
+    transition:0.25s;
+}
+
+.login-content button:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 12px var(--accent);
+}
+
+@keyframes fadeIn{
+    from{opacity:0; transform:translateY(10px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+/* PANEL */
+#adminPanel{
+    display:none;
+    background:rgba(10,15,30,0.8);
+    padding:20px;
+    position:relative;
+    z-index:1;
+}
+#adminPanel input{
+    padding:8px;
+    margin:5px;
+    border-radius:5px;
+    border:none;
+}
+
+/* modo edición */
+#btnGuardar.editando{
+    background:linear-gradient(135deg,#f59e0b,#d97706);
 }
 
 /* GRID */
@@ -63,6 +171,8 @@ header{
     grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
     gap:18px;
     padding:20px;
+    position:relative;
+    z-index:1;
 }
 
 /* CARD */
@@ -70,10 +180,12 @@ header{
     background:rgba(15,23,42,0.8);
     border-radius:10px;
     overflow:hidden;
+    transition:0.3s;
     display:flex;
     flex-direction:column;
 }
 .card:hover{transform:scale(1.05);}
+
 .card img{width:100%;}
 
 .content{
@@ -83,48 +195,51 @@ header{
     flex:1;
 }
 
-/* BOTONES */
+.content h3{font-size:14px;margin:5px 0;}
+.content p{font-size:12px;color:#9aa7b1;}
+
 .btns{
     display:flex;
     gap:6px;
     margin-top:auto;
+    opacity:0;
+    transform:translateY(10px);
+    transition:0.3s;
 }
+.card:hover .btns{
+    opacity:1;
+    transform:translateY(0);
+}
+
 .btn{
     flex:1;
     padding:7px;
-    border:none;
+    font-size:12px;
+    border-radius:5px;
     color:white;
+    border:none;
+    cursor:pointer;
 }
 .blue{background:var(--accent);}
 .green{background:var(--green);}
 
-/* PAGINACIÓN PRO */
-.paginacion{
+.admin-actions{
     display:flex;
-    justify-content:center;
-    gap:8px;
-    margin:30px 0;
-    flex-wrap:wrap;
+    gap:5px;
+    margin-top:5px;
 }
-.paginacion button{
-    padding:8px 12px;
-    border-radius:8px;
-    border:none;
-    background:#020617;
-    color:white;
-    cursor:pointer;
-}
-.paginacion button.activa{
-    background:linear-gradient(135deg,var(--accent),var(--accent2));
-}
-.paginacion span{opacity:0.5;}
 </style>
 </head>
 
 <body>
 
+<canvas id="stars"></canvas>
+
 <header>
-<h2>Luma Switch</h2>
+<div class="logo">  
+  <h1>
+    <img src="https://media.discordapp.net/attachments/1419649387948150826/1496590717789933568/Luma..webp?ex=69ea7038&amp;is=69e91eb8&amp;hm=1c965e73aa583ba83623fea531507bd15febc8522d488547f3f78b1d7e868a20&amp;=&amp;format=webp" alt="Luma Logo" height="25"> Luma Switch</h1>
+</div>
 <input type="text" id="buscador" placeholder="Buscar...">
 <div class="header-btn">
 <button onclick="abrirLogin()">🔐 Admin</button>
@@ -132,36 +247,52 @@ header{
 </div>
 </header>
 
+<div id="loginBox">
+<div class="login-content">
+<h3>Panel Admin</h3>
+<input id="user" placeholder="Email">
+<input id="pass" type="password" placeholder="Contraseña">
+<button onclick="login()">Entrar</button>
+<button onclick="cerrarLogin()">Cerrar</button>
+</div>
+</div>
+
+<div id="adminPanel">
+<input id="nombre" placeholder="Nombre">
+<input id="img" placeholder="Imagen URL">
+<input id="desc" placeholder="Descripción">
+<input id="link1" placeholder="Link 1">
+<input id="link2" placeholder="Link 2">
+<button id="btnGuardar" onclick="agregarJuego()">Guardar</button>
+</div>
+
 <div class="store" id="store"></div>
 
 <script>
-let juegosData = [];
-let paginaActual = 1;
-const juegosPorPagina = 8;
+function abrirLogin(){loginBox.style.display="flex";}
+function cerrarLogin(){loginBox.style.display="none";}
 
-/* FILTRO */
-function juegosFiltrados(){
+let admin=false;
+let editIndex=null;
+let guardando=false;
+let cargando=false;
+
+/* 🔎 NUEVO: almacenamiento para búsqueda */
+let juegosData = [];
+
+/* 🔎 FILTRO EN TIEMPO REAL */
+buscador.addEventListener("input", ()=>{
     const texto = buscador.value.toLowerCase();
-    return juegosData.filter(j =>
+    render(juegosData.filter(j =>
         j.nombre.toLowerCase().includes(texto) ||
         j.desc.toLowerCase().includes(texto)
-    );
-}
-
-buscador.addEventListener("input", ()=>{
-    paginaActual = 1;
-    render(juegosFiltrados());
+    ));
 });
 
-/* RENDER */
+/* 🔎 render reutilizable */
 function render(lista){
-    const total = Math.ceil(lista.length / juegosPorPagina) || 1;
-
-    const inicio = (paginaActual - 1) * juegosPorPagina;
-    const pagina = lista.slice(inicio, inicio + juegosPorPagina);
-
     let html="";
-    pagina.forEach(j=>{
+    lista.forEach(j=>{
         html+=`
         <div class="card">
         <img src="${j.img}">
@@ -170,50 +301,26 @@ function render(lista){
         <p>${j.desc}</p>
 
         <div class="btns">
-        <a href="${j.link1}" target="_blank" class="btn blue">Link 1</a>
-        <a href="${j.link2}" target="_blank" class="btn green">Link 2</a>
+        <button class="btn blue">Ver enlace</button>
+        <button class="btn green">Ver enlace</button>
         </div>
+
+        ${admin?`
+        <div class="admin-actions">
+        <button onclick="eliminar('${j.id}')">🗑️</button>
+        </div>`:""}
 
         </div>
         </div>`;
     });
-
     store.innerHTML = html;
-    renderPaginacion(total);
-}
-
-/* PAGINACIÓN */
-function renderPaginacion(total){
-    let html = `<div class="paginacion">`;
-
-    html += `<button onclick="irPagina(${paginaActual-1})" ${paginaActual===1?"disabled":""}>‹</button>`;
-
-    for(let i=1;i<=total;i++){
-        if(i===1 || i===total || (i>=paginaActual-1 && i<=paginaActual+1)){
-            html += `<button class="${i===paginaActual?"activa":""}" onclick="irPagina(${i})">${i}</button>`;
-        }else if(i===paginaActual-2 || i===paginaActual+2){
-            html += `<span>...</span>`;
-        }
-    }
-
-    html += `<button onclick="irPagina(${paginaActual+1})" ${paginaActual===total?"disabled":""}>›</button>`;
-    html += `</div>`;
-
-    store.innerHTML += html;
-}
-
-function irPagina(p){
-    const total = Math.ceil(juegosFiltrados().length / juegosPorPagina);
-    if(p<1 || p>total) return;
-    paginaActual = p;
-    window.scrollTo({top:0, behavior:"smooth"});
-    render(juegosFiltrados());
 }
 </script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCnqFKUPqbcTt0As9atnSQML00ReFgcgbw",
@@ -223,23 +330,157 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
-async function cargar(){
-    const snapshot = await getDocs(collection(db,"juegos"));
+onAuthStateChanged(auth, (user) => {
+  admin = !!user;
+  adminPanel.style.display = admin ? "block" : "none";
+  logoutBtn.style.display = admin ? "inline-block" : "none";
+  cargar();
+});
 
-    juegosData = [];
+window.login = async ()=>{
+await signInWithEmailAndPassword(auth,user.value,pass.value);
+cerrarLogin();
+};
 
-    snapshot.forEach(docSnap=>{
-        const j = docSnap.data();
-        j.id = docSnap.id;
-        juegosData.push(j);
-    });
+window.logout = async ()=>{
+await signOut(auth);
+};
 
-    paginaActual = 1;
-    render(juegosFiltrados());
+window.cargar = async ()=>{
+
+if(cargando) return;
+cargando = true;
+
+const snapshot=await getDocs(collection(db,"juegos"));
+
+juegosData = [];
+
+snapshot.forEach(docSnap=>{
+const j=docSnap.data();
+j.id = docSnap.id;
+juegosData.push(j);
+});
+
+/* 🔎 usa render */
+render(juegosData);
+
+cargando=false;
+};
+
+window.agregarJuego = async function(){
+
+if(guardando) return;
+guardando=true;
+btnGuardar.disabled=true;
+
+let nuevo={
+nombre:nombre.value,
+img:img.value,
+desc:desc.value,
+link1:link1.value,
+link2:link2.value
+};
+
+try{
+
+const q=query(collection(db,"juegos"), where("nombre","==",nombre.value));
+const snap=await getDocs(q);
+
+if(!snap.empty && editIndex==null){
+alert("Este juego ya existe");
+guardando=false;
+btnGuardar.disabled=false;
+return;
 }
 
+if(editIndex==null){
+await addDoc(collection(db,"juegos"),nuevo);
+}else{
+await updateDoc(doc(db,"juegos",editIndex),nuevo);
+editIndex=null;
+}
+
+}catch(e){console.error(e);}
+
+btnGuardar.innerText="Guardar";
+btnGuardar.classList.remove("editando");
+
+guardando=false;
+btnGuardar.disabled=false;
 cargar();
+};
+
+window.editar=(j)=>{
+nombre.value = j.nombre;
+img.value = j.img;
+desc.value = j.desc;
+link1.value = j.link1;
+link2.value = j.link2;
+
+editIndex = j.id;
+
+btnGuardar.innerText="Actualizar juego";
+btnGuardar.classList.add("editando");
+
+adminPanel.scrollIntoView({behavior:"smooth"});
+};
+
+window.eliminar=async(id)=>{
+await deleteDoc(doc(db,"juegos",id));
+cargar();
+};
+</script>
+
+<script>
+const canvas = document.getElementById("stars");
+const ctx = canvas.getContext("2d");
+
+let stars = [];
+let numStars = 80;
+
+function resize(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener("resize", resize);
+
+function initStars(){
+    stars = [];
+    for(let i=0;i<numStars;i++){
+        stars.push({
+            x: Math.random()*canvas.width,
+            y: Math.random()*canvas.height,
+            r: Math.random()*1.2,
+            speed: Math.random()*0.3 + 0.05
+        });
+    }
+}
+initStars();
+
+function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    ctx.fillStyle = "white";
+
+    for(let s of stars){
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+        ctx.fill();
+
+        s.y += s.speed;
+
+        if(s.y > canvas.height){
+            s.y = 0;
+            s.x = Math.random()*canvas.width;
+        }
+    }
+
+    requestAnimationFrame(draw);
+}
+draw();
 </script>
 
 </body>
