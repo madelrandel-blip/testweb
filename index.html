@@ -363,6 +363,11 @@ j.id = docSnap.id;
 juegosData.push(j);
 });
 
+    // 🔤 ORDEN ALFABÉTICO
+juegosData.sort((a, b) =>
+    a.nombre.localeCompare(b.nombre, 'es', { sensitivity: 'base' })
+);
+
 /* 🔎 usa render */
 render(juegosData);
 
