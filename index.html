@@ -24,12 +24,7 @@ body{
                 var(--bg);
 }
 
-#stars{
-    position:fixed;
-    inset:0;
-    z-index:0;
-    pointer-events:none;
-}
+#stars{position:fixed; inset:0; z-index:0; pointer-events:none;}
 
 header{
     background:rgba(10,15,30,0.7);
@@ -37,9 +32,9 @@ header{
     padding:15px;
     display:flex;
     align-items:center;
+    gap:15px;
     position:relative;
     z-index:1;
-    gap:15px;
 }
 
 #buscador{
@@ -51,11 +46,7 @@ header{
     border:1px solid rgba(255,255,255,0.1);
 }
 
-.header-btn{
-    margin-left:auto;
-    display:flex;
-    gap:10px;
-}
+.header-btn{margin-left:auto; display:flex; gap:10px;}
 
 .header-btn button{
     padding:8px 14px;
@@ -66,32 +57,54 @@ header{
     color:white;
 }
 
+/* LOGIN */
+#loginBox{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.6);
+    justify-content:center;
+    align-items:center;
+    z-index:10;
+}
+.login-content{
+    background:#0f172a;
+    padding:25px;
+    border-radius:15px;
+    width:280px;
+    text-align:center;
+}
+.login-content input{
+    width:100%;
+    margin:8px 0;
+    padding:10px;
+}
+
+/* PANEL */
+#adminPanel{display:none; padding:20px;}
+#adminPanel input{margin:5px; padding:8px;}
+
 .store{
     display:grid;
     grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
     gap:18px;
     padding:20px;
-    position:relative;
     z-index:1;
+    position:relative;
 }
 
 .card{
     background:rgba(15,23,42,0.8);
     border-radius:10px;
     overflow:hidden;
-    transition:0.3s;
     display:flex;
     flex-direction:column;
+    transition:0.3s;
 }
 .card:hover{transform:scale(1.05);}
 .card img{width:100%;}
 
-.content{
-    padding:10px;
-    display:flex;
-    flex-direction:column;
-    flex:1;
-}
+.content{padding:10px; display:flex; flex-direction:column; flex:1;}
 
 .btns{
     display:flex;
@@ -101,23 +114,13 @@ header{
     transform:translateY(10px);
     transition:0.3s;
 }
-.card:hover .btns{
-    opacity:1;
-    transform:translateY(0);
-}
+.card:hover .btns{opacity:1; transform:translateY(0);}
 
-.btn{
-    flex:1;
-    padding:7px;
-    font-size:12px;
-    border-radius:5px;
-    color:white;
-    border:none;
-}
+.btn{flex:1; padding:7px; border:none; color:white;}
 .blue{background:var(--accent);}
 .green{background:var(--green);}
 
-/* PAGINACIÓN PRO */
+/* PAGINACIÓN */
 .paginacion{
     display:flex;
     justify-content:center;
@@ -147,7 +150,30 @@ header{
 <header>
 <h2>Luma Switch</h2>
 <input type="text" id="buscador" placeholder="Buscar...">
+<div class="header-btn">
+<button onclick="abrirLogin()">🔐 Admin</button>
+<button onclick="logout()" id="logoutBtn" style="display:none;">🚪 Salir</button>
+</div>
 </header>
+
+<div id="loginBox">
+<div class="login-content">
+<h3>Admin</h3>
+<input id="user">
+<input id="pass" type="password">
+<button onclick="login()">Entrar</button>
+<button onclick="cerrarLogin()">Cerrar</button>
+</div>
+</div>
+
+<div id="adminPanel">
+<input id="nombre" placeholder="Nombre">
+<input id="img" placeholder="Imagen">
+<input id="desc" placeholder="Descripción">
+<input id="link1" placeholder="Link 1">
+<input id="link2" placeholder="Link 2">
+<button onclick="agregarJuego()">Guardar</button>
+</div>
 
 <div class="store" id="store"></div>
 
@@ -170,17 +196,12 @@ buscador.addEventListener("input", ()=>{
 });
 
 function render(lista){
-    const totalPaginas = Math.ceil(lista.length / juegosPorPagina) || 1;
-
-    if(paginaActual > totalPaginas) paginaActual = totalPaginas;
+    const total = Math.ceil(lista.length / juegosPorPagina) || 1;
 
     const inicio = (paginaActual - 1) * juegosPorPagina;
-    const fin = inicio + juegosPorPagina;
+    const pagina = lista.slice(inicio, inicio + juegosPorPagina);
 
-    const pagina = lista.slice(inicio, fin);
-
-    let html = "";
-
+    let html="";
     pagina.forEach(j=>{
         html+=`
         <div class="card">
@@ -194,12 +215,14 @@ function render(lista){
         <a href="${j.link2}" target="_blank" class="btn green">Link 2</a>
         </div>
 
+        ${admin?`<button onclick="eliminar('${j.id}')">🗑️</button>`:""}
+
         </div>
         </div>`;
     });
 
     store.innerHTML = html;
-    renderPaginacion(totalPaginas);
+    renderPaginacion(total);
 }
 
 function renderPaginacion(total){
@@ -223,23 +246,73 @@ function renderPaginacion(total){
 
 function irPagina(p){
     const total = Math.ceil(juegosFiltrados().length / juegosPorPagina);
-    if(p < 1 || p > total) return;
-
+    if(p<1 || p>total) return;
     paginaActual = p;
-    window.scrollTo({top:0, behavior:"smooth"});
+    window.scrollTo({top:0,behavior:"smooth"});
     render(juegosFiltrados());
 }
 
-/* DEMO DATA (puedes borrar esto cuando uses Firebase) */
-juegosData = Array.from({length:40}, (_,i)=>({
-    nombre:"Juego "+(i+1),
-    desc:"Descripción del juego "+(i+1),
-    img:"https://via.placeholder.com/300x400",
-    link1:"#",
-    link2:"#"
-}));
+function abrirLogin(){loginBox.style.display="flex";}
+function cerrarLogin(){loginBox.style.display="none";}
+</script>
 
-render(juegosFiltrados());
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "TU_API_KEY",
+  authDomain: "TU_AUTH",
+  projectId: "TU_PROJECT"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+let admin=false;
+
+onAuthStateChanged(auth,(user)=>{
+    admin=!!user;
+    adminPanel.style.display=admin?"block":"none";
+    logoutBtn.style.display=admin?"inline":"none";
+    cargar();
+});
+
+window.login=()=>signInWithEmailAndPassword(auth,user.value,pass.value);
+window.logout=()=>signOut(auth);
+
+async function cargar(){
+    const snapshot = await getDocs(collection(db,"juegos"));
+
+    juegosData = [];
+
+    snapshot.forEach(docSnap=>{
+        const j = docSnap.data();
+        j.id = docSnap.id;
+        juegosData.push(j);
+    });
+
+    paginaActual = 1;
+    render(juegosFiltrados());
+}
+
+window.agregarJuego=async ()=>{
+    await addDoc(collection(db,"juegos"),{
+        nombre:nombre.value,
+        img:img.value,
+        desc:desc.value,
+        link1:link1.value,
+        link2:link2.value
+    });
+    cargar();
+};
+
+window.eliminar=async(id)=>{
+    await deleteDoc(doc(db,"juegos",id));
+    cargar();
+};
 </script>
 
 </body>
