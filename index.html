@@ -303,6 +303,13 @@ function render(lista){
         <div class="btns">
         <button class="btn blue" onclick="abrirLink('${j.link1}')">Ver enlace</button>
         <button class="btn green" onclick="abrirLink('${j.link2}')">Ver enlace</button>
+        function abrirLink(link){
+    if(link && link.trim() !== ""){
+        window.open(link, "_blank");
+    }else{
+        alert("No hay enlace disponible");
+    }
+}
         </div>
 
         ${admin?`
